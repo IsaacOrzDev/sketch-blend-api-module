@@ -1,15 +1,17 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { Injectable } from '@nestjs/common';
+import { MqttService } from './proxy/mqtt.service';
 
 @Injectable()
 export class AppService {
-  constructor(@Inject('SUB_SERVICE') private client: ClientProxy) {}
+  constructor(private mqttService: MqttService) {}
 
   async getTesting() {
-    const data = await firstValueFrom(
-      this.client.send('testing', { id: undefined }),
-    );
-    return data;
+    try {
+      const data = await this.mqttService.publish('testing', {});
+      return data;
+    } catch (err) {
+      console.log('err', err);
+    }
+    return '';
   }
 }
