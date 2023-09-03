@@ -10,7 +10,7 @@ export class AppService {
       // const data = await this.mqttService.publish('testing', {});
       // console.log('data', data);
       // return data;
-      return 'testing1';
+      return 'testing';
     } catch (err) {
       console.log('err', err);
     }
