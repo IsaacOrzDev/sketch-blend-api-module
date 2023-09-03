@@ -7,8 +7,10 @@ export class AppService {
 
   async getTesting() {
     try {
-      const data = await this.mqttService.publish('testing', {});
-      return data;
+      // const data = await this.mqttService.publish('testing', {});
+      // console.log('data', data);
+      // return data;
+      return 'testing';
     } catch (err) {
       console.log('err', err);
     }

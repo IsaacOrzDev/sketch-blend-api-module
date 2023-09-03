@@ -10,4 +10,9 @@ export class AuthController {
   async verifyGoogleIdToken(@Body() dto: VerifyGoogleIdTokenDto) {
     return this.authService.verifyGoogleIdToken(dto.token);
   }
+
+  @Post('/access-token/generate')
+  async generateAccessToken() {
+    return this.authService.generateAccessToken();
+  }
 }

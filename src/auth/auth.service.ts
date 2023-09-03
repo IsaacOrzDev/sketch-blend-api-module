@@ -33,6 +33,13 @@ export class AuthService {
       },
     );
 
-    return !!verifiedResult;
+    return !verifiedResult.error;
+  }
+
+  public async generateAccessToken() {
+    return this.mqttService.publish(MqttTopic.GENERATE_ACCESS_TOKEN, {
+      userId: 'userId',
+      username: 'username',
+    });
   }
 }
