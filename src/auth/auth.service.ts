@@ -25,6 +25,17 @@ export class AuthService {
     }
   }
 
+  public async verifyGithubAccessToken(token: string) {
+    const verifiedResult = await this.mqttService.publish(
+      MqttTopic.VERIFY_GITHUB_ACCESS_TOKEN,
+      {
+        token,
+      },
+    );
+
+    return !verifiedResult.error;
+  }
+
   public async verifyAccessToken(token: string) {
     const verifiedResult = await this.mqttService.publish(
       MqttTopic.VERIFY_ACCESS_TOKEN,
@@ -40,6 +51,16 @@ export class AuthService {
     return this.mqttService.publish(MqttTopic.GENERATE_ACCESS_TOKEN, {
       userId: 'userId',
       username: 'username',
+    });
+  }
+
+  public async sendEmailForPasswordLess(email: string) {
+    console.log('email', email);
+  }
+
+  public async verifyPasswordLessToken(token: string) {
+    return this.mqttService.publish(MqttTopic.VERIFY_PASSWORD_LESS_TOKEN, {
+      token,
     });
   }
 }
