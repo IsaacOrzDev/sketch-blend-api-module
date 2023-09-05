@@ -5,18 +5,6 @@ export class VerifyTokenDto {
     type: String,
   })
   token: string;
-  @ApiProperty({
-    type: Boolean,
-    nullable: true,
-  })
-  withAccessToken?: boolean;
-}
-
-export class verifyPasswordLessToken {
-  @ApiProperty({
-    type: String,
-  })
-  token: string;
 }
 
 export class SendEmailForPasswordLessDto {

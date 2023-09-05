@@ -1,10 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {
-  SendEmailForPasswordLessDto,
-  VerifyTokenDto,
-  verifyPasswordLessToken,
-} from './auth.dto';
+import { SendEmailForPasswordLessDto, VerifyTokenDto } from './auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
@@ -17,15 +13,20 @@ export class AuthController {
     const verifiedResult = await this.authService.verifyGoogleIdToken(
       dto.token,
     );
+    return verifiedResult;
+  }
+
+  @Post('/google/signin')
+  async signInWithGoogleIdToken(@Body() dto: VerifyTokenDto) {
+    const verifiedResult = await this.authService.verifyGoogleIdToken(
+      dto.token,
+    );
     if (!!verifiedResult['error']) {
       return verifiedResult;
     }
     try {
-      if (dto.withAccessToken) {
-        const token = await this.authService.generateAccessToken();
-        return { success: true, ...token };
-      }
-      return { success: true };
+      const token = await this.authService.generateAccessToken();
+      return { success: true, ...token };
     } catch (err) {
       console.log(err.message);
       return { error: 'Internal server error' };
@@ -37,13 +38,28 @@ export class AuthController {
     return this.authService.verifyGithubAccessToken(dto.token);
   }
 
+  @Post('/github/signin')
+  async signInWithGithubAccessToken(@Body() dto: VerifyTokenDto) {
+    const verifiedResult = this.authService.verifyGithubAccessToken(dto.token);
+    if (!!verifiedResult['error']) {
+      return verifiedResult;
+    }
+    try {
+      const token = await this.authService.generateAccessToken();
+      return { success: true, ...token };
+    } catch (err) {
+      console.log(err.message);
+      return { error: 'Internal server error' };
+    }
+  }
+
   @Post('/password-less/send-email')
   async sendEmailForPasswordLess(@Body() dto: SendEmailForPasswordLessDto) {
     return this.authService.sendEmailForPasswordLess(dto.email);
   }
 
-  @Post('/password-less/verify')
-  async verifyPasswordLessToken(@Body() dto: verifyPasswordLessToken) {
+  @Post('/password-less/signin')
+  async signInWithPasswordLessToken(@Body() dto: VerifyTokenDto) {
     return this.authService.verifyPasswordLessToken(dto.token);
   }
 
