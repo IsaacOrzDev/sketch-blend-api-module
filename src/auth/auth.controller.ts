@@ -1,14 +1,35 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SendEmailForPasswordLessDto, VerifyTokenDto } from './auth.dto';
+import {
+  SendEmailForPasswordLessDto,
+  VerifyTokenDto,
+  verifyPasswordLessToken,
+} from './auth.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('/google/verify')
   async verifyGoogleIdToken(@Body() dto: VerifyTokenDto) {
-    return this.authService.verifyGoogleIdToken(dto.token);
+    const verifiedResult = await this.authService.verifyGoogleIdToken(
+      dto.token,
+    );
+    if (!!verifiedResult['error']) {
+      return verifiedResult;
+    }
+    try {
+      if (dto.withAccessToken) {
+        const token = await this.authService.generateAccessToken();
+        return { success: true, ...token };
+      }
+      return { success: true };
+    } catch (err) {
+      console.log(err.message);
+      return { error: 'Internal server error' };
+    }
   }
 
   @Post('/github/verify')
@@ -22,7 +43,7 @@ export class AuthController {
   }
 
   @Post('/password-less/verify')
-  async verifyPasswordLessToken(@Body() dto: VerifyTokenDto) {
+  async verifyPasswordLessToken(@Body() dto: verifyPasswordLessToken) {
     return this.authService.verifyPasswordLessToken(dto.token);
   }
 
