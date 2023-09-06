@@ -6,7 +6,10 @@ import { firstValueFrom } from 'rxjs';
 export class MqttService {
   constructor(@Inject('MQTT_SERVICE') private client: ClientProxy) {}
 
-  public publish(topic: string, params: any) {
-    return firstValueFrom(this.client.send(topic, params));
+  public async publish(topic: string, params: any) {
+    const result = await firstValueFrom(this.client.send(topic, params));
+    if (result === 'Invalid topic') {
+      return { error: 'Invalid topic' };
+    }
   }
 }

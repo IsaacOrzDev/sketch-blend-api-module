@@ -40,7 +40,9 @@ export class AuthController {
 
   @Post('/github/signin')
   async signInWithGithubAccessToken(@Body() dto: VerifyTokenDto) {
-    const verifiedResult = this.authService.verifyGithubAccessToken(dto.token);
+    const verifiedResult = await this.authService.verifyGithubAccessToken(
+      dto.token,
+    );
     if (!!verifiedResult['error']) {
       return verifiedResult;
     }

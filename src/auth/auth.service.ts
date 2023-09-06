@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { OAuth2Client as GoogleOAuth2Client } from 'google-auth-library';
+import { EmailService } from 'src/email/email.service';
 import { MqttTopic } from 'src/proxy/mqtt-topic.config';
 import { MqttService } from 'src/proxy/mqtt.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private mqttService: MqttService) {}
+  constructor(
+    private mqttService: MqttService,
+    private emailService: EmailService,
+  ) {}
 
   public async verifyGoogleIdToken(token: string) {
     try {
@@ -33,7 +37,7 @@ export class AuthService {
       },
     );
 
-    return !verifiedResult.error;
+    return verifiedResult;
   }
 
   public async verifyAccessToken(token: string) {
@@ -55,7 +59,15 @@ export class AuthService {
   }
 
   public async sendEmailForPasswordLess(email: string) {
-    console.log('email', email);
+    return this.emailService.sendEmail({
+      to: [email],
+      subject: 'Demo-System: Sign In',
+      template: 'testing-template',
+      data: {
+        message: 'Sign in',
+        subject: 'Demo-System: Sign In',
+      },
+    });
   }
 
   public async verifyPasswordLessToken(token: string) {
