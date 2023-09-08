@@ -1,6 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SendEmailForPasswordLessDto, VerifyTokenDto } from './auth.dto';
+import {
+  AuthenticateGithubUserDto,
+  SendEmailForPasswordLessDto,
+  VerifyTokenDto,
+} from './auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
@@ -33,18 +37,11 @@ export class AuthController {
     }
   }
 
-  @Post('/github/verify')
-  async verifyGithubAccessToken(@Body() dto: VerifyTokenDto) {
-    return this.authService.verifyGithubAccessToken(dto.token);
-  }
-
-  @Post('/github/signin')
-  async signInWithGithubAccessToken(@Body() dto: VerifyTokenDto) {
-    const verifiedResult = await this.authService.verifyGithubAccessToken(
-      dto.token,
-    );
-    if (!!verifiedResult['error']) {
-      return verifiedResult;
+  @Post('/github/authenticate')
+  async authenticateGithubUser(@Body() dto: AuthenticateGithubUserDto) {
+    const authResult = await this.authService.authenticateGithubUser(dto.code);
+    if (!authResult.login) {
+      return { error: 'Cannot authenticate with Github' };
     }
     try {
       const token = await this.authService.generateAccessToken();

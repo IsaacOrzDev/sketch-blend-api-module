@@ -11,5 +11,6 @@ export class MqttService {
     if (result === 'Invalid topic') {
       return { error: 'Invalid topic' };
     }
+    return result;
   }
 }

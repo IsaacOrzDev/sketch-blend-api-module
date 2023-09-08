@@ -7,6 +7,13 @@ export class VerifyTokenDto {
   token: string;
 }
 
+export class AuthenticateGithubUserDto {
+  @ApiProperty({
+    type: String,
+  })
+  code: string;
+}
+
 export class SendEmailForPasswordLessDto {
   @ApiProperty({
     type: String,
