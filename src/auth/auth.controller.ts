@@ -20,13 +20,11 @@ export class AuthController {
     return verifiedResult;
   }
 
-  @Post('/google/signin')
-  async signInWithGoogleIdToken(@Body() dto: VerifyTokenDto) {
-    const verifiedResult = await this.authService.verifyGoogleIdToken(
-      dto.token,
-    );
-    if (!!verifiedResult['error']) {
-      return verifiedResult;
+  @Post('/google/authenticate')
+  async authenticateGoogleUser(@Body() dto: AuthenticateGithubUserDto) {
+    const authResult = await this.authService.authenticateGoogleUser(dto.code);
+    if (!!authResult['error']) {
+      return { error: 'Cannot authenticate with Google' };
     }
     try {
       const token = await this.authService.generateAccessToken();

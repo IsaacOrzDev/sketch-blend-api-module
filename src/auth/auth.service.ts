@@ -8,18 +8,22 @@ import * as FormData from 'form-data';
 
 @Injectable()
 export class AuthService {
+  private googleClient: GoogleOAuth2Client;
+
   constructor(
     private mqttService: MqttService,
     private emailService: EmailService,
-  ) {}
+  ) {
+    this.googleClient = new GoogleOAuth2Client(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      'postmessage',
+    );
+  }
 
   public async verifyGoogleIdToken(token: string) {
     try {
-      const client = new GoogleOAuth2Client(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-      );
-      const ticket = await client.verifyIdToken({
+      const ticket = await this.googleClient.verifyIdToken({
         idToken: token,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
@@ -29,6 +33,15 @@ export class AuthService {
       console.log(err.message);
       return { error: 'Token is not valid' };
     }
+  }
+
+  public async authenticateGoogleUser(code: string) {
+    const tokenResult = await this.googleClient.getToken(code);
+    const verifyResult = await this.verifyGoogleIdToken(
+      tokenResult.tokens.id_token,
+    );
+    console.log(verifyResult);
+    return verifyResult;
   }
 
   public async authenticateGithubUser(code: string) {
