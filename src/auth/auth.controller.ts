@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   AuthenticateGithubUserDto,
@@ -6,11 +6,15 @@ import {
   VerifyTokenDto,
 } from './auth.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { SupabaseService } from './supabase.service';
 
 @ApiTags('Auth')
 @Controller('/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private supabaseService: SupabaseService,
+  ) {}
 
   @Post('/google/verify')
   async verifyGoogleIdToken(@Body() dto: VerifyTokenDto) {
@@ -63,5 +67,11 @@ export class AuthController {
   @Post('/access-token/generate')
   async generateAccessToken() {
     return this.authService.generateAccessToken();
+  }
+
+  @Get('/supabase/github/authenticate')
+  async authenticateGithubUserWithSupabase() {
+    // @Body() dto: AuthenticateGithubUserDto,
+    return this.supabaseService.signIn();
   }
 }
