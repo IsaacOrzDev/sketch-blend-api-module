@@ -22,31 +22,25 @@ export class AuthController {
 
   @Post('/google/authenticate')
   async authenticateGoogleUser(@Body() dto: AuthenticateGithubUserDto) {
-    const authResult = await this.authService.authenticateGoogleUser(dto.code);
-    if (!!authResult['error']) {
-      return { error: 'Cannot authenticate with Google' };
-    }
     try {
+      await this.authService.authenticateGoogleUser(dto.code);
       const token = await this.authService.generateAccessToken();
       return { success: true, ...token };
     } catch (err) {
-      console.log(err.message);
-      return { error: err.message };
+      console.log(err);
+      throw new Error('Cannot authenticate with Google');
     }
   }
 
   @Post('/github/authenticate')
   async authenticateGithubUser(@Body() dto: AuthenticateGithubUserDto) {
-    const authResult = await this.authService.authenticateGithubUser(dto.code);
-    if (!authResult.login) {
-      return { error: 'Cannot authenticate with Github' };
-    }
     try {
+      await this.authService.authenticateGithubUser(dto.code);
       const token = await this.authService.generateAccessToken();
       return { success: true, ...token };
     } catch (err) {
-      console.log(err.message);
-      return { error: err.message };
+      console.log(err);
+      throw new Error('Cannot authenticate with Github');
     }
   }
 

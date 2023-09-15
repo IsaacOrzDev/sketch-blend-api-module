@@ -25,6 +25,8 @@ model Login {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   user      User        @relation(fields: [userId], references: [id])
+
+  @@map("logins") // Specify the collection name as "logins"
 }
 
 model User {

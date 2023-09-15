@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
-import { CreateUserDto, createUserDtoSchema } from './user.type';
+import { CreateUserDto, FindUserDto } from './user.dto';
 
 @Injectable()
 export class UserService {
   constructor(private dbService: DbService) {}
 
   public async createUser(data: CreateUserDto) {
-    createUserDtoSchema.parse(data);
-
     return this.dbService.client.user.create({
       data: {
         name: data.name,
@@ -24,7 +22,7 @@ export class UserService {
     });
   }
 
-  public async findUser(data: any) {
+  public async findUser(data: FindUserDto) {
     return this.dbService.client.user.findFirst({
       where: {
         OR: [
