@@ -5,6 +5,8 @@ import { MqttTopic } from 'src/proxy/mqtt-topic.config';
 import { MqttService } from 'src/proxy/mqtt.service';
 import fetch from 'node-fetch';
 import * as FormData from 'form-data';
+import { UserService } from 'src/user/user.service';
+import { LoginMethod } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,7 @@ export class AuthService {
   constructor(
     private mqttService: MqttService,
     private emailService: EmailService,
+    private userService: UserService,
   ) {
     this.googleClient = new GoogleOAuth2Client(
       process.env.GOOGLE_CLIENT_ID,
@@ -31,17 +34,28 @@ export class AuthService {
       return payload;
     } catch (err) {
       console.log(err.message);
-      return { error: 'Token is not valid' };
+      throw new Error('Id token is not valid');
     }
   }
 
   public async authenticateGoogleUser(code: string) {
     const tokenResult = await this.googleClient.getToken(code);
-    const verifyResult = await this.verifyGoogleIdToken(
-      tokenResult.tokens.id_token,
-    );
-    console.log(verifyResult);
-    return verifyResult;
+    const payload = await this.verifyGoogleIdToken(tokenResult.tokens.id_token);
+    const findUserResult = await this.userService.findUser({
+      email: payload.email,
+    });
+    if (!findUserResult) {
+      await this.userService.createUser({
+        name: payload.name,
+        email: payload.email,
+        login: {
+          method: LoginMethod.GOOGLE,
+          data: payload,
+          imageUrl: payload.picture,
+        },
+      });
+    }
+    return { ...payload, isFirstTime: !findUserResult };
   }
 
   public async authenticateGithubUser(code: string) {
@@ -72,21 +86,24 @@ export class AuthService {
   }
 
   public async verifyAccessToken(token: string) {
-    const verifiedResult = await this.mqttService.publish(
-      MqttTopic.VERIFY_ACCESS_TOKEN,
-      {
-        token,
-      },
-    );
-
-    return !verifiedResult.error;
+    if (process.env.IS_MICROSERVICE) {
+      const verifiedResult = await this.mqttService.publish(
+        MqttTopic.VERIFY_ACCESS_TOKEN,
+        {
+          token,
+        },
+      );
+      return !verifiedResult.error;
+    }
   }
 
   public async generateAccessToken() {
-    return this.mqttService.publish(MqttTopic.GENERATE_ACCESS_TOKEN, {
-      userId: 'userId',
-      username: 'username',
-    });
+    if (process.env.IS_MICROSERVICE) {
+      return this.mqttService.publish(MqttTopic.GENERATE_ACCESS_TOKEN, {
+        userId: 'userId',
+        username: 'username',
+      });
+    }
   }
 
   public async sendEmailForPasswordLess(email: string) {

@@ -1043,6 +1043,18 @@
     picocolors "^1.0.0"
     tslib "^2.6.0"
 
+"@prisma/client@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.3.0.tgz#47f07e5639993cffcf1c740a144495410562f279"
+  integrity sha512-cduYBlwj6oBfAUx2OI5i7t3NlpVeOtkN7pAqv0cw0B6gs4y8cY1mr8ZYywja0NUCOCqEWDkcZWBTVBwm6mnRIw==
+  dependencies:
+    "@prisma/engines-version" "5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4"
+
+"@prisma/engines-version@5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4":
+  version "5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4"
+  resolved "https://registry.yarnpkg.com/@prisma/engines-version/-/engines-version-5.3.0-36.e90b936d84779543cbe0e494bc8b9d7337fad8e4.tgz#46ee2884e04cdba1163461ef856cec882d31c836"
+  integrity sha512-uftIog5FQ/OUR8Vb9TzpNBJ6L+zJnBgmd1A0uPJUzuvGMU32UmeyobpdXVzST5UprKryTdWOYXQFVyiQ2OU4Nw==
+
 "@prisma/engines@5.3.0":
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-5.3.0.tgz#5c793d8298dfde0e4b297d75b38babaf6e3648af"
@@ -5843,3 +5855,8 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@^3.22.2:
+  version "3.22.2"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.22.2.tgz#3add8c682b7077c05ac6f979fea6998b573e157b"
+  integrity sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==

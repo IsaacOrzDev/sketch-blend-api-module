@@ -10,7 +10,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum LoginMethod {
+  GOOGLE
+  GITHUB
+  PASSWORD_LESS
+}
+
+model Login {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  method    LoginMethod
+  userId    String      @db.ObjectId
+  imageUrl  String?
+  data      Json?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id])
+}
+
 model User {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  logins    Login[]
 }

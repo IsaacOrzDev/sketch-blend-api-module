@@ -31,7 +31,7 @@ export class AuthController {
       return { success: true, ...token };
     } catch (err) {
       console.log(err.message);
-      return { error: 'Internal server error' };
+      return { error: err.message };
     }
   }
 
@@ -46,7 +46,7 @@ export class AuthController {
       return { success: true, ...token };
     } catch (err) {
       console.log(err.message);
-      return { error: 'Internal server error' };
+      return { error: err.message };
     }
   }
 
