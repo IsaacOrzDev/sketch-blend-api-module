@@ -38,24 +38,47 @@ export class AuthService {
     }
   }
 
-  public async authenticateGoogleUser(code: string) {
-    const tokenResult = await this.googleClient.getToken(code);
-    const payload = await this.verifyGoogleIdToken(tokenResult.tokens.id_token);
+  private async processAuthentication(data: {
+    email: string;
+    name: string;
+    imageUrl: string;
+    method: LoginMethod;
+    data?: any;
+  }) {
     const findUserResult = await this.userService.findUser({
-      email: payload.email,
+      email: data.email,
+      name: data.name,
+      method: data.method,
     });
     if (!findUserResult) {
       await this.userService.createUser({
-        name: payload.name,
-        email: payload.email,
+        name: data.name,
+        email: data.email,
         login: {
           method: LoginMethod.GOOGLE,
-          data: payload,
-          imageUrl: payload.picture,
+          data: data.data,
+          imageUrl: data.imageUrl,
         },
       });
     }
-    return { ...payload, isFirstTime: !findUserResult };
+    return {
+      name: data.name,
+      email: data.email,
+      imageUrl: data.imageUrl,
+      isFirstTime: !findUserResult,
+    };
+  }
+
+  public async authenticateGoogleUser(code: string) {
+    const tokenResult = await this.googleClient.getToken(code);
+    const payload = await this.verifyGoogleIdToken(tokenResult.tokens.id_token);
+    return this.processAuthentication({
+      email: payload.email,
+      name: payload.name,
+      imageUrl: payload.picture,
+      method: LoginMethod.GOOGLE,
+      data: payload,
+    });
   }
 
   public async authenticateGithubUser(code: string) {

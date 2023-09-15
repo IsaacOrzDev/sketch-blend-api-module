@@ -12,20 +12,12 @@ import { ApiTags } from '@nestjs/swagger';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/google/verify')
-  async verifyGoogleIdToken(@Body() dto: VerifyTokenDto) {
-    const verifiedResult = await this.authService.verifyGoogleIdToken(
-      dto.token,
-    );
-    return verifiedResult;
-  }
-
   @Post('/google/authenticate')
   async authenticateGoogleUser(@Body() dto: AuthenticateGithubUserDto) {
     try {
-      await this.authService.authenticateGoogleUser(dto.code);
+      const result = await this.authService.authenticateGoogleUser(dto.code);
       const token = await this.authService.generateAccessToken();
-      return { success: true, ...token };
+      return { success: true, ...token, isFirstTime: result.isFirstTime };
     } catch (err) {
       console.log(err);
       throw new Error('Cannot authenticate with Google');
@@ -57,5 +49,10 @@ export class AuthController {
   @Post('/access-token/generate')
   async generateAccessToken() {
     return this.authService.generateAccessToken();
+  }
+
+  @Post('/access-token/verify')
+  async verifyAccessToken(@Body() dto: VerifyTokenDto) {
+    return this.authService.verifyAccessToken(dto.token);
   }
 }
