@@ -22,18 +22,17 @@ model Login {
   userId    String      @db.ObjectId
   imageUrl  String?
   data      Json?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
   user      User        @relation(fields: [userId], references: [id])
-
-  @@map("logins") // Specify the collection name as "logins"
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  loginAt   DateTime?
   logins    Login[]
 }

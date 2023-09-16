@@ -60,6 +60,15 @@ export class AuthService {
           imageUrl: data.imageUrl,
         },
       });
+    } else {
+      await this.userService.loginUser({
+        id: findUserResult.id,
+        login: {
+          method: data.method,
+          data: data.data,
+          imageUrl: data.imageUrl,
+        },
+      });
     }
     return {
       name: data.name,

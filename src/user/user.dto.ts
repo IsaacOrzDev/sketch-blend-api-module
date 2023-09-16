@@ -10,6 +10,15 @@ export class CreateUserDto {
   };
 }
 
+export class LoginUserDto {
+  id: string;
+  login: {
+    method: LoginMethod;
+    data?: any;
+    imageUrl?: string;
+  };
+}
+
 export class FindUserDto {
   name?: string;
   email?: string;
