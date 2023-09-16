@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
+  AddOneTimeTokenDto,
   AuthenticateGithubUserDto,
   AuthenticateResponse,
   SendEmailForPasswordLessDto,
@@ -9,11 +10,15 @@ import {
 } from './auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiFormattedResponse } from 'src/decorator/api-response';
+import AccessTokenService from './access-token.service';
 
 @ApiTags('Auth')
 @Controller('/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private accessTokenService: AccessTokenService,
+  ) {}
 
   @ApiFormattedResponse({
     type: AuthenticateResponse,
@@ -31,13 +36,7 @@ export class AuthController {
   }> {
     try {
       const result = await this.authService.authenticateGoogleUser(dto.code);
-      const token = await this.authService.generateAccessToken({
-        userId: result.name,
-        username: result.name,
-        email: result.email,
-        imageUrl: result.imageUrl,
-      });
-      return { success: true, ...token, isFirstTime: result.isFirstTime };
+      return result;
     } catch (err) {
       console.log(err);
       throw new Error('Cannot authenticate with Google');
@@ -53,16 +52,8 @@ export class AuthController {
   @Post('/github/authenticate')
   async authenticateGithubUser(@Body() dto: AuthenticateGithubUserDto) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = await this.authService.authenticateGithubUser(dto.code);
-
-      const token = await this.authService.generateAccessToken({
-        userId: result.name,
-        username: result.name,
-        email: result.email,
-        imageUrl: result.imageUrl,
-      });
-      return { success: true, ...token };
+      return result;
     } catch (err) {
       console.log(err);
       throw new Error('Cannot authenticate with Github');
@@ -74,14 +65,36 @@ export class AuthController {
     return this.authService.sendEmailForPasswordLess(dto.email);
   }
 
-  @Post('/password-less/signin')
-  async signInWithPasswordLessToken(@Body() dto: VerifyTokenDto) {
-    return this.authService.verifyPasswordLessToken(dto.token);
+  @ApiFormattedResponse({
+    type: {},
+  })
+  @Post('/password-less/generate')
+  async generatePasswordLessToken(@Body() dto: AddOneTimeTokenDto) {
+    return this.accessTokenService.addOneTimeAccessToken(dto);
+  }
+
+  @ApiFormattedResponse({
+    type: AuthenticateResponse,
+    isCreated: true,
+    successDescription: 'Authenticate with Email',
+    errorDescription: 'Cannot authenticate with Email',
+  })
+  @Post('/password-less/authenticate')
+  async AuthenticatePasswordLessLogin(@Body() dto: VerifyTokenDto) {
+    try {
+      const result = await this.authService.authenticatePasswordLessLogin(
+        dto.token,
+      );
+      return result;
+    } catch (err) {
+      console.log(err);
+      throw new Error('Cannot authenticate with Email');
+    }
   }
 
   @Post('/access-token/generate')
   async generateAccessToken() {
-    return this.authService.generateAccessToken({
+    return this.accessTokenService.generateAccessToken({
       userId: 'userId',
       username: 'username',
     });
@@ -93,6 +106,6 @@ export class AuthController {
   })
   @Post('/access-token/verify')
   async verifyAccessToken(@Body() dto: VerifyTokenDto) {
-    return this.authService.verifyAccessToken(dto.token);
+    return this.accessTokenService.verifyAccessToken(dto.token);
   }
 }

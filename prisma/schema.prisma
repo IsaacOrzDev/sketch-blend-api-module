@@ -22,17 +22,26 @@ model Login {
   userId    String      @db.ObjectId
   imageUrl  String?
   data      Json?
+  user      User        @relation(fields: [userId], references: [id])
   createdAt DateTime?   @default(now())
   updatedAt DateTime?   @updatedAt
-  user      User        @relation(fields: [userId], references: [id])
 }
 
 model User {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
   loginAt   DateTime?
   logins    Login[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model OneTimeAccessToken {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  token     String    @unique
+  email     String
+  username  String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }

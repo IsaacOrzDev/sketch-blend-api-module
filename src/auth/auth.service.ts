@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { OAuth2Client as GoogleOAuth2Client } from 'google-auth-library';
 import { EmailService } from 'src/email/email.service';
-import { MqttTopic } from 'src/proxy/mqtt-topic.config';
-import { MqttService } from 'src/proxy/mqtt.service';
 import fetch from 'node-fetch';
 import * as FormData from 'form-data';
 import { UserService } from 'src/user/user.service';
 import { LoginMethod } from '@prisma/client';
+import AccessTokenService from './access-token.service';
 
 @Injectable()
 export class AuthService {
   private googleClient: GoogleOAuth2Client;
 
   constructor(
-    private mqttService: MqttService,
     private emailService: EmailService,
     private userService: UserService,
+    private accessTokenService: AccessTokenService,
   ) {
     this.googleClient = new GoogleOAuth2Client(
       process.env.GOOGLE_CLIENT_ID,
@@ -24,7 +23,7 @@ export class AuthService {
     );
   }
 
-  public async verifyGoogleIdToken(token: string) {
+  private async verifyGoogleIdToken(token: string) {
     try {
       const ticket = await this.googleClient.verifyIdToken({
         idToken: token,
@@ -41,7 +40,7 @@ export class AuthService {
   private async processAuthentication(data: {
     email: string;
     name: string;
-    imageUrl: string;
+    imageUrl?: string;
     method: LoginMethod;
     data?: any;
   }) {
@@ -70,10 +69,16 @@ export class AuthService {
         },
       });
     }
-    return {
-      name: data.name,
+
+    const token = await this.accessTokenService.generateAccessToken({
+      username: data.name,
       email: data.email,
       imageUrl: data.imageUrl,
+      durationType: '1d',
+    });
+
+    return {
+      ...token,
       isFirstTime: !findUserResult,
     };
   }
@@ -131,41 +136,6 @@ export class AuthService {
     });
   }
 
-  public async verifyAccessToken(token: string) {
-    if (process.env.IS_MICROSERVICE) {
-      const verifiedResult = await this.mqttService.publish(
-        MqttTopic.VERIFY_ACCESS_TOKEN,
-        {
-          token,
-        },
-      );
-      if (verifiedResult.error) {
-        throw new Error(verifiedResult.error);
-      }
-      return {
-        ...verifiedResult,
-        userId: verifiedResult.user_id,
-        imageUrl: verifiedResult.image_url,
-      };
-    }
-  }
-
-  public async generateAccessToken(data: {
-    userId: string;
-    username: string;
-    email?: string;
-    imageUrl?: string;
-  }) {
-    if (process.env.IS_MICROSERVICE) {
-      return this.mqttService.publish(MqttTopic.GENERATE_ACCESS_TOKEN, {
-        userId: data.userId,
-        username: data.username,
-        email: data.email,
-        imageUrl: data.imageUrl,
-      });
-    }
-  }
-
   public async sendEmailForPasswordLess(email: string) {
     return this.emailService.sendEmail({
       to: [email],
@@ -178,9 +148,14 @@ export class AuthService {
     });
   }
 
-  public async verifyPasswordLessToken(token: string) {
-    return this.mqttService.publish(MqttTopic.VERIFY_PASSWORD_LESS_TOKEN, {
-      token,
+  public async authenticatePasswordLessLogin(token: string) {
+    const result =
+      await this.accessTokenService.verifyOneTimeAccessToken(token);
+
+    return this.processAuthentication({
+      email: result.email,
+      name: result.username ?? '',
+      method: LoginMethod.PASSWORD_LESS,
     });
   }
 }

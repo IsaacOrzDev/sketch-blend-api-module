@@ -61,3 +61,11 @@ export class VerifyTokenResponse {
   @ApiProperty({ type: String, nullable: true })
   imageUrl?: string;
 }
+
+export class AddOneTimeTokenDto {
+  @ApiProperty({ type: String, nullable: true })
+  username?: string;
+
+  @ApiProperty({ type: String })
+  email: string;
+}
