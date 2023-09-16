@@ -24,3 +24,26 @@ export class SendEmailForPasswordLessDto {
   @IsNotEmpty()
   email: string;
 }
+
+export class AuthenticateResponse {
+  @ApiProperty({
+    type: Boolean,
+    default: true,
+  })
+  success: boolean;
+
+  @ApiProperty({
+    type: Date,
+  })
+  expiredAt: string;
+
+  @ApiProperty({
+    type: String,
+  })
+  token: string;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  isFirstTime: boolean;
+}

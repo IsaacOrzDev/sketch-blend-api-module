@@ -3,8 +3,8 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
-  BadGatewayException,
   BadRequestException,
+  HttpException,
 } from '@nestjs/common';
 import { Observable, catchError, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -37,7 +37,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
             statusCode: 500,
             message: [err.message || 'Internal server error'],
           };
-          return throwError(() => new BadGatewayException(response));
+          return throwError(() => new HttpException(response, 500));
         }),
       );
   }

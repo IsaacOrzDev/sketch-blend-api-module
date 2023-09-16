@@ -2,18 +2,32 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   AuthenticateGithubUserDto,
+  AuthenticateResponse,
   SendEmailForPasswordLessDto,
   VerifyTokenDto,
 } from './auth.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { ApiFormattedResponse } from 'src/decorator/api-response';
 
 @ApiTags('Auth')
 @Controller('/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiFormattedResponse({
+    type: AuthenticateResponse,
+    isCreated: true,
+    successDescription: 'Authenticate with Google',
+    errorDescription: 'Cannot authenticate with Google',
+  })
   @Post('/google/authenticate')
-  async authenticateGoogleUser(@Body() dto: AuthenticateGithubUserDto) {
+  async authenticateGoogleUser(
+    @Body() dto: AuthenticateGithubUserDto,
+  ): Promise<{
+    success: boolean;
+    token: string;
+    isFirstTime: boolean;
+  }> {
     try {
       const result = await this.authService.authenticateGoogleUser(dto.code);
       const token = await this.authService.generateAccessToken();
@@ -24,6 +38,12 @@ export class AuthController {
     }
   }
 
+  @ApiFormattedResponse({
+    type: AuthenticateResponse,
+    isCreated: true,
+    successDescription: 'Authenticate with Github',
+    errorDescription: 'Cannot authenticate with Github',
+  })
   @Post('/github/authenticate')
   async authenticateGithubUser(@Body() dto: AuthenticateGithubUserDto) {
     try {

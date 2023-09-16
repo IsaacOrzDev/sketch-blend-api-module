@@ -98,12 +98,21 @@ export class AuthService {
       },
     ).then((res) => res.json());
 
+    if (accessTokenResult.error) {
+      throw new Error(accessTokenResult.error_description);
+    }
+
     const userResult = await fetch(`https://api.github.com/user`, {
       method: 'GET',
       headers: {
         Authorization: `token ${accessTokenResult.access_token}`,
       },
     }).then((res) => res.json());
+
+    if (!!userResult.message && userResult.message.includes('Bad')) {
+      throw new Error(userResult.message);
+    }
+
     console.log(userResult);
     return userResult;
   }
