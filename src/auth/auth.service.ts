@@ -125,15 +125,29 @@ export class AuthService {
           token,
         },
       );
-      return !verifiedResult.error;
+      if (verifiedResult.error) {
+        throw new Error(verifiedResult.error);
+      }
+      return {
+        ...verifiedResult,
+        userId: verifiedResult.user_id,
+        imageUrl: verifiedResult.image_url,
+      };
     }
   }
 
-  public async generateAccessToken() {
+  public async generateAccessToken(data: {
+    userId: string;
+    username: string;
+    email?: string;
+    imageUrl?: string;
+  }) {
     if (process.env.IS_MICROSERVICE) {
       return this.mqttService.publish(MqttTopic.GENERATE_ACCESS_TOKEN, {
-        userId: 'userId',
-        username: 'username',
+        userId: data.userId,
+        username: data.username,
+        email: data.email,
+        imageUrl: data.imageUrl,
       });
     }
   }

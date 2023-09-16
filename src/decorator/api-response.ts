@@ -26,27 +26,14 @@ export function ApiFormattedResponse(data: {
   errorDescription?: string;
   isCreated?: boolean;
 }): MethodDecorator & ClassDecorator {
-  class CustomResponse {
-    @ApiProperty({
-      type: Number,
-      default: 200,
-    })
-    statusCode: number;
-
-    @ApiProperty({
-      type: () => (data.type !== undefined ? data.type : {}),
-    })
-    data: any;
-  }
-
   return applyDecorators(
     data.isCreated
       ? ApiCreatedResponse({
-          type: CustomResponse,
+          type: data.type,
           description: data.successDescription,
         })
       : ApiOkResponse({
-          type: CustomResponse,
+          type: data.type,
           description: data.successDescription,
         }),
     ApiBadRequestResponse({

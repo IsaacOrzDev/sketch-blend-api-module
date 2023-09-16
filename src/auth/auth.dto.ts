@@ -47,3 +47,17 @@ export class AuthenticateResponse {
   })
   isFirstTime: boolean;
 }
+
+export class VerifyTokenResponse {
+  @ApiProperty({ type: String })
+  userId: string;
+
+  @ApiProperty({ type: String })
+  username: string;
+
+  @ApiProperty({ type: String, nullable: true })
+  email?: string;
+
+  @ApiProperty({ type: String, nullable: true })
+  imageUrl?: string;
+}

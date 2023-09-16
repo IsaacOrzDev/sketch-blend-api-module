@@ -5,6 +5,7 @@ import {
   AuthenticateResponse,
   SendEmailForPasswordLessDto,
   VerifyTokenDto,
+  VerifyTokenResponse,
 } from './auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiFormattedResponse } from 'src/decorator/api-response';
@@ -30,7 +31,12 @@ export class AuthController {
   }> {
     try {
       const result = await this.authService.authenticateGoogleUser(dto.code);
-      const token = await this.authService.generateAccessToken();
+      const token = await this.authService.generateAccessToken({
+        userId: result.name,
+        username: result.name,
+        email: result.email,
+        imageUrl: result.imageUrl,
+      });
       return { success: true, ...token, isFirstTime: result.isFirstTime };
     } catch (err) {
       console.log(err);
@@ -47,8 +53,14 @@ export class AuthController {
   @Post('/github/authenticate')
   async authenticateGithubUser(@Body() dto: AuthenticateGithubUserDto) {
     try {
-      await this.authService.authenticateGithubUser(dto.code);
-      const token = await this.authService.generateAccessToken();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const authResult = await this.authService.authenticateGithubUser(
+        dto.code,
+      );
+      const token = await this.authService.generateAccessToken({
+        userId: 'userId',
+        username: 'username',
+      });
       return { success: true, ...token };
     } catch (err) {
       console.log(err);
@@ -68,9 +80,16 @@ export class AuthController {
 
   @Post('/access-token/generate')
   async generateAccessToken() {
-    return this.authService.generateAccessToken();
+    return this.authService.generateAccessToken({
+      userId: 'userId',
+      username: 'username',
+    });
   }
 
+  @ApiFormattedResponse({
+    type: VerifyTokenResponse,
+    isCreated: true,
+  })
   @Post('/access-token/verify')
   async verifyAccessToken(@Body() dto: VerifyTokenDto) {
     return this.authService.verifyAccessToken(dto.token);
