@@ -113,8 +113,13 @@ export class AuthService {
       throw new Error(userResult.message);
     }
 
-    console.log(userResult);
-    return userResult;
+    return this.processAuthentication({
+      email: userResult.email,
+      name: userResult.name,
+      imageUrl: userResult.avatar_url,
+      data: userResult,
+      method: LoginMethod.GITHUB,
+    });
   }
 
   public async verifyAccessToken(token: string) {

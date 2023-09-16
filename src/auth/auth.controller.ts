@@ -54,12 +54,13 @@ export class AuthController {
   async authenticateGithubUser(@Body() dto: AuthenticateGithubUserDto) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const authResult = await this.authService.authenticateGithubUser(
-        dto.code,
-      );
+      const result = await this.authService.authenticateGithubUser(dto.code);
+
       const token = await this.authService.generateAccessToken({
-        userId: 'userId',
-        username: 'username',
+        userId: result.name,
+        username: result.name,
+        email: result.email,
+        imageUrl: result.imageUrl,
       });
       return { success: true, ...token };
     } catch (err) {
