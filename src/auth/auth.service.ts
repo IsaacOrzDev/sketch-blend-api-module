@@ -55,7 +55,7 @@ export class AuthService {
         name: data.name,
         email: data.email,
         login: {
-          method: LoginMethod.GOOGLE,
+          method: data.method,
           data: data.data,
           imageUrl: data.imageUrl,
         },
