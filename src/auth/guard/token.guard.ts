@@ -4,11 +4,11 @@ import {
   ExecutionContext,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from '../auth.service';
+import AccessTokenService from '../access-token.service';
 
 @Injectable()
 export class TokenGuard implements CanActivate {
-  constructor(private authService: AuthService) {}
+  constructor(private accessTokenService: AccessTokenService) {}
 
   private extractTokenFromHeader(request: Request) {
     const [type, token] = request.headers['authorization']?.split(' ') ?? [];
@@ -23,7 +23,7 @@ export class TokenGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    if (!(await this.authService.verifyAccessToken(token))) {
+    if (!(await this.accessTokenService.verifyAccessToken(token))) {
       throw new UnauthorizedException();
     }
 

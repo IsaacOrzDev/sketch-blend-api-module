@@ -1,15 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
+import { ResponseInterceptor } from './interceptors/response-interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  app.enableCors({
-    origin: ['*'],
-    methods: ['GET', 'POST', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
-    credentials: true,
-  });
 
   const config = new DocumentBuilder()
     .setTitle('Demo System API')
@@ -17,7 +13,14 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
+  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  });
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
