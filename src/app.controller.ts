@@ -7,9 +7,14 @@ import { TokenGuard } from './auth/guard/token.guard';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Get()
+  healthCheck() {
+    return true;
+  }
+
   @ApiBearerAuth()
   @UseGuards(TokenGuard)
-  @Get()
+  @Get('/test')
   getTesting() {
     return this.appService.getTesting();
   }
