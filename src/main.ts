@@ -7,12 +7,6 @@ import { ResponseInterceptor } from './interceptors/response-interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: ['*'],
-    methods: ['GET', 'POST', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
-    credentials: true,
-  });
-
   const config = new DocumentBuilder()
     .setTitle('Demo System API')
     .setVersion('1.0')
@@ -22,6 +16,11 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ResponseInterceptor());
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  });
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

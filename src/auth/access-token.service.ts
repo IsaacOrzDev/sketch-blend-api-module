@@ -61,11 +61,11 @@ export default class AccessTokenService {
       durationType: '10m',
     });
 
-    await this.dbService.client.oneTimeToken.create({
+    await this.dbService.client.oneTimeAccessToken.create({
       data: {
         token: tokenResult.token,
         email: data.email,
-        name: data.username,
+        username: data.username,
       },
     });
 
@@ -73,11 +73,12 @@ export default class AccessTokenService {
   }
 
   public async verifyOneTimeAccessToken(token: string) {
-    const tokenRecord = await this.dbService.client.oneTimeToken.findUnique({
-      where: {
-        token,
-      },
-    });
+    const tokenRecord =
+      await this.dbService.client.oneTimeAccessToken.findUnique({
+        where: {
+          token,
+        },
+      });
 
     if (!tokenRecord) {
       throw new Error('Token is not valid');
@@ -85,7 +86,7 @@ export default class AccessTokenService {
 
     await this.verifyAccessToken(token);
 
-    await this.dbService.client.oneTimeToken.delete({
+    await this.dbService.client.oneTimeAccessToken.delete({
       where: {
         id: tokenRecord.id,
       },
@@ -93,7 +94,7 @@ export default class AccessTokenService {
 
     return {
       email: tokenRecord.email,
-      username: tokenRecord.name,
+      username: tokenRecord.username,
     };
   }
 }
