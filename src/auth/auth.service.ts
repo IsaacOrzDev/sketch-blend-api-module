@@ -129,6 +129,8 @@ export class AuthService {
       throw new Error(userResult.message);
     }
 
+    console.log('userResult', userResult);
+
     return this.processAuthentication({
       email: userResult.email,
       name: userResult.name,
