@@ -100,7 +100,9 @@ export class AuthService {
     data.append('client_id', process.env.GITHUB_CLIENT_ID);
     data.append('client_secret', process.env.GITHUB_CLIENT_SECRET);
     data.append('code', code);
-    data.append('redirect_uri', 'http://localhost:3000');
+
+    console.log(`${process.env.PORTAL_URL}/api/auth/github`);
+    data.append('redirect_uri', `${process.env.PORTAL_URL}/api/auth/github`);
     const accessTokenResult = await fetch(
       `https://github.com/login/oauth/access_token`,
       {
