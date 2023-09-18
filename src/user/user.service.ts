@@ -85,4 +85,12 @@ export class UserService {
       },
     });
   }
+
+  public async findAllUsers() {
+    return this.dbService.client.user.findMany({
+      include: {
+        logins: true,
+      },
+    });
+  }
 }
