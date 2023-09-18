@@ -101,7 +101,6 @@ export class AuthService {
     data.append('client_secret', process.env.GITHUB_CLIENT_SECRET);
     data.append('code', code);
 
-    console.log(`${process.env.PORTAL_URL}/api/auth/github`);
     data.append('redirect_uri', `${process.env.PORTAL_URL}/api/auth/github`);
     const accessTokenResult = await fetch(
       `https://github.com/login/oauth/access_token`,
@@ -128,8 +127,6 @@ export class AuthService {
     if (!!userResult.message && userResult.message.includes('Bad')) {
       throw new Error(userResult.message);
     }
-
-    console.log('userResult', userResult);
 
     return this.processAuthentication({
       email: userResult.email,
