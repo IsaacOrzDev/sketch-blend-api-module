@@ -17,6 +17,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Check Commit Message
+        id: check_commit
+        run: |
+          commit_message=$(git log --format=%B -n 1 ${{ github.sha }})
+          if [[ $commit_message =~ ^- ]]; then
+            echo "::set-output name=deploy::false"
+            exit 1
+          else
+            echo "::set-output name=deploy::true"
+          fi        
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -44,6 +55,7 @@ jobs:
           # echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
   update_ecs_service:
+    name: Update ECS Service    
     needs: build
     runs-on: ubuntu-latest
     permissions:
