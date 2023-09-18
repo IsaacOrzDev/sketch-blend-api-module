@@ -42,3 +42,33 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           # echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+  update_ecs_service:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Check Commit Message
+        id: check_commit
+        run: |
+          commit_message=$(git log --format=%B -n 1 ${{ github.sha }})
+          if [[ $commit_message =~ ^! ]]; then
+            echo "::set-output name=deploy::true"
+          else
+            echo "::set-output name=deploy::false"
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        if: steps.check_commit.outputs.deploy == 'true'
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_FOR_ECS }}
+          aws-region: us-west-1
+
+      - name: Update ECS service
+        if: steps.check_commit.outputs.deploy == 'true'
+        run: |
+          aws ecs update-service --cluster ${{ vars.NAME }}-cluster --service  ${{ vars.NAME }}-service --force-new-deployment
