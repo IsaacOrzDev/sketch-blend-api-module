@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  call-workflow-passing-data:
+  deploy:
     uses: IsaacOrzDev/github-reusable-workflows/.github/workflows/aws_deployment.yml@main
     permissions:
       id-token: write
