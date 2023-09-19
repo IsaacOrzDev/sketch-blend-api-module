@@ -15,6 +15,6 @@ jobs:
 
     steps:
       - name: Deploy
-        uses: './.github/template/buil_image'
+        uses: './.github/template/build_image'
         with:
           respository_name: demo-system-api
