@@ -1,0 +1,20 @@
+name: Deploy to AWS ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-20.04
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Deploy
+        uses: './.github/actions/build_image'
+        with:
+          respository_name: demo-system-api
