@@ -21,7 +21,8 @@
     "docker:build": "docker build -t $(grep IMAGE_NAME .env | cut -d '=' -f2) .",
     "prisma:pull": "prisma db pull",
     "prisma:push": "prisma db push --skip-generate",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "ts-proto:gen": "protoc --ts_proto_opt=nestJs=true --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=. ./src/proto/*.proto"
   },
   "dependencies": {
     "@apollo/server": "^4.9.3",
