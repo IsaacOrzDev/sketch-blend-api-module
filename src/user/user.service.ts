@@ -1,10 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { CreateUserDto, FindUserDto, LoginUserDto } from './user.dto';
+import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class UserService {
-  constructor(private dbService: DbService) {}
+export class UserService implements OnModuleInit {
+  constructor(
+    private dbService: DbService,
+    @Inject('SUB_PACKAGE') private client: ClientGrpc,
+  ) {}
+
+  private grpcService: any;
+
+  onModuleInit() {
+    this.grpcService = this.client.getService('User');
+  }
 
   public async createUser(data: CreateUserDto) {
     return this.dbService.client.user.create({
@@ -92,5 +103,14 @@ export class UserService {
         logins: true,
       },
     });
+  }
+
+  public async createUserByGrpc() {
+    return firstValueFrom(
+      this.grpcService.CreateUser({
+        name: 'test',
+        email: '',
+      }),
+    );
   }
 }

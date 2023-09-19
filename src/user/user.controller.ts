@@ -1,6 +1,6 @@
 // controller to get users data
 
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TokenGuard } from 'src/auth/guard/token.guard';
@@ -15,5 +15,11 @@ export class UserController {
   @Get('/')
   public async findAllUsers() {
     return this.userService.findAllUsers();
+  }
+
+  // testing
+  @Post('/')
+  public async createUser() {
+    return this.userService.createUserByGrpc();
   }
 }
