@@ -8,6 +8,9 @@ on:
 jobs:
   call-workflow-passing-data:
     uses: IsaacOrzDev/demo-system-api/.github/workflows/reusable.yml@main
+    permissions:
+      id-token: write
+      contents: read
     with:
       repository_name: demo-system-api
     secrets:
