@@ -6,22 +6,29 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build image
-    runs-on: ubuntu-20.04
-    permissions:
-      id-token: write
-      contents: read
+  call-workflow-passing-data:
+    uses: IsaacOrzDev/demo-system-api/.github/workflows/reusable.yml@main
+    with:
+      repository_name: demo-system-api
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+      AWS_ROLE_ARN_FOR_ECS: ${{ secrets.AWS_ROLE_ARN_FOR_ECS }}
+  # build:
+  #   name: Build image
+  #   runs-on: ubuntu-20.04
+  #   permissions:
+  #     id-token: write
+  #     contents: read
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         ref: ${{ github.event.workflow_run.head_branch }}
 
-      - name: Deploy
-        uses: './.github/template/build_image'
+  #     - name: Deploy
+  #       uses: './.github/template/build_image'
 
-        with:
-          respository_name: demo-system-api
-          secrets: ${{ toJson(secrets) }}
+  #       with:
+  #         repository_name: demo-system-api
+  #         secrets: ${{ toJson(secrets) }}
