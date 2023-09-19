@@ -21,5 +21,7 @@ jobs:
 
       - name: Deploy
         uses: './.github/template/build_image'
+
         with:
           respository_name: demo-system-api
+          secrets: ${{ toJson(secrets) }}

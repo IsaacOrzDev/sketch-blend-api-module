@@ -4,7 +4,7 @@ name: deploy
 inputs:
   repository_name:
     required: true
-  namespace:
+  secrets:
     required: true
 
 runs:
@@ -16,6 +16,7 @@ runs:
 
     - name: Check Commit Message
       id: check_commit
+      shell: bash
       run: |
         commit_message=$(git log --format=%B -n 1 ${{ github.sha }})
         if [[ $commit_message =~ ^- ]]; then
@@ -30,7 +31,7 @@ runs:
       with:
         # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        role-to-assume: ${{ inputs.secrets.AWS_ROLE_ARN }}
         aws-region: us-west-1
 
     - name: Login to Amazon ECR
@@ -48,6 +49,7 @@ runs:
         ECR_REPOSITORY: ${{inputs.repository_name }}
         # IMAGE_TAG: ${{ github.sha }}
         IMAGE_TAG: latest
+      shell: bash
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
