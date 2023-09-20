@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DbService } from 'src/db/db.service';
 import { CreateUserDto, FindUserDto, LoginUserDto } from './user.dto';
-import { UserClient } from 'src/proto/user';
 
 @Injectable()
 export class UserService {
   constructor(private dbService: DbService) {}
-
-  private userClient: UserClient;
 
   public async createUser(data: CreateUserDto) {
     return this.dbService.client.user.create({

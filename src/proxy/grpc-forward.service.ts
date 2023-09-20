@@ -3,16 +3,16 @@ import { ClientGrpc } from '@nestjs/microservices';
 import {
   USER_PACKAGE_NAME,
   USER_SERVICE_NAME,
-  UserClient,
+  UserServiceClient,
 } from 'src/proto/user';
 
 @Injectable()
 export class GrpcForwardService {
   constructor(@Inject(USER_PACKAGE_NAME) private grpc: ClientGrpc) {}
 
-  public userClient: UserClient;
+  public userServiceClient: UserServiceClient;
 
   onModuleInit() {
-    this.userClient = this.grpc.getService(USER_SERVICE_NAME);
+    this.userServiceClient = this.grpc.getService(USER_SERVICE_NAME);
   }
 }
