@@ -24,9 +24,10 @@ export class UserController {
   // testing
   @Post('/')
   public async createUser() {
-    return this.grpcService.userClient.createUser({
-      name: 'test',
-      email: 'testing@gmail.com',
-    });
+    // return this.grpcService.userClient.createUser({
+    //   name: 'test',
+    //   email: 'testing@gmail.com',
+    // });
+    return this.grpcService.userClient.testing({});
   }
 }
