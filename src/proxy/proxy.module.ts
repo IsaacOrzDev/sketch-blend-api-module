@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { MqttService } from './mqtt.service';
 import { ConfigModule } from '@nestjs/config';
 import { USER_PACKAGE_NAME } from 'src/proto/user';
 import { join } from 'path';
@@ -11,17 +10,6 @@ import { AccessTokenGrpc } from './access-token.grpc';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    ClientsModule.register([
-      {
-        name: 'MQTT_SERVICE',
-        transport: Transport.MQTT,
-        options: {
-          url: process.env.MQTT_URL,
-          username: process.env.MQTT_USERNAME,
-          password: process.env.MQTT_PASSWORD,
-        },
-      },
-    ]),
     ClientsModule.register([
       {
         name: ACCESS_TOKEN_PACKAGE_NAME,
@@ -45,7 +33,7 @@ import { AccessTokenGrpc } from './access-token.grpc';
       },
     ]),
   ],
-  providers: [MqttService, GrpcForwardService, AccessTokenGrpc],
-  exports: [MqttService, GrpcForwardService, AccessTokenGrpc],
+  providers: [GrpcForwardService, AccessTokenGrpc],
+  exports: [GrpcForwardService, AccessTokenGrpc],
 })
 export class ProxyModule {}
