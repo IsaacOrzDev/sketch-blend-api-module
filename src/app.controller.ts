@@ -1,11 +1,10 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { AppService } from './app.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { TokenGuard } from './auth/guard/token.guard';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor() {}
 
   @Get()
   healthCheck() {
@@ -16,6 +15,6 @@ export class AppController {
   @UseGuards(TokenGuard)
   @Get('/test')
   getTesting() {
-    return this.appService.getTesting();
+    return 'testing';
   }
 }

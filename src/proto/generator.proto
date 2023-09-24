@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package generator;
+
+service GeneratorService{
+  
+ rpc Predict(PredictRequest) returns (PredictReply) {}
+
+}
+
+message PredictRequest {
+  string prompt = 1;
+}
+
+message PredictReply{
+  repeated string urls = 1;
+}

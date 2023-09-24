@@ -1,32 +1,17 @@
-// controller to get users data
-
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TokenGuard } from 'src/auth/guard/token.guard';
-import { GrpcForwardService } from 'src/proxy/grpc-forward.service';
 
-@ApiTags('users')
+@ApiTags('Users')
 @Controller('/users')
 export class UserController {
-  constructor(
-    private userService: UserService,
-    private grpcService: GrpcForwardService,
-  ) {}
+  constructor(private userService: UserService) {}
 
   @ApiBearerAuth()
   @UseGuards(TokenGuard)
   @Get('/')
   public async findAllUsers() {
     return this.userService.findAllUsers();
-  }
-
-  // testing
-  @Post('/')
-  public async createUser() {
-    return this.grpcService.userServiceClient.createUser({
-      name: 'test',
-      email: 'testing@gmail.com',
-    });
   }
 }

@@ -7,12 +7,12 @@ import {
 } from 'src/proto/user';
 
 @Injectable()
-export class GrpcForwardService {
+export class UserGrpc {
   constructor(@Inject(USER_PACKAGE_NAME) private grpc: ClientGrpc) {}
 
-  public userServiceClient: UserServiceClient;
+  public client: UserServiceClient;
 
   onModuleInit() {
-    this.userServiceClient = this.grpc.getService(USER_SERVICE_NAME);
+    this.client = this.grpc.getService(USER_SERVICE_NAME);
   }
 }

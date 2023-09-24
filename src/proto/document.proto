@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+option go_package = "./proto";
+
+package document;
+
+service DocumentService {
+  rpc SaveDocument(SaveDocumentRequest) returns (SaveDocumentReply);
+  rpc GetDocumentList(GetDocumentListRequest) returns (GetDocumentListReply);
+  rpc GetDocument(GetDocumentRequest) returns (GetDocumentReply);
+  rpc UpdateDocument(UpdateDocumentRequest) returns (UpdateDocumentReply);
+  rpc DeleteDocument(DeleteDocumentRequest) returns (DeleteDocumentReply);
+}
+
+message SaveDocumentRequest {
+  string title = 1;
+  string content = 2;
+}
+
+message SaveDocumentReply {
+  string id = 1;
+}
+
+message GetDocumentListRequest {
+  int32 page = 1;
+  int32 size = 2;
+}
+
+message GetDocumentListReply {
+  repeated Document document = 1;
+}
+
+message GetDocumentRequest {
+  string id = 1;
+}
+
+message GetDocumentReply {
+  Document document = 1;
+}
+
+message UpdateDocumentRequest {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+}
+
+message UpdateDocumentReply {
+  string id = 1;
+}
+
+message DeleteDocumentRequest {
+  string id = 1;
+} 
+
+message DeleteDocumentReply {
+  string id = 1;
+}
+
+message Document {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  int64 created_at = 4;
+  int64 updated_at = 5;
+}
