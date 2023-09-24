@@ -23,10 +23,14 @@ export class TokenGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    if (!(await this.accessTokenService.verifyAccessToken(token))) {
+    try {
+      if (!(await this.accessTokenService.verifyAccessToken(token)).isValid) {
+        throw new UnauthorizedException();
+      }
+
+      return true;
+    } catch (err) {
       throw new UnauthorizedException();
     }
-
-    return true;
   }
 }

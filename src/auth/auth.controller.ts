@@ -27,13 +27,7 @@ export class AuthController {
     errorDescription: 'Cannot authenticate with Google',
   })
   @Post('/google/authenticate')
-  async authenticateGoogleUser(
-    @Body() dto: AuthenticateGithubUserDto,
-  ): Promise<{
-    success: boolean;
-    token: string;
-    isFirstTime: boolean;
-  }> {
+  async authenticateGoogleUser(@Body() dto: AuthenticateGithubUserDto) {
     try {
       const result = await this.authService.authenticateGoogleUser(dto.code);
       return result;

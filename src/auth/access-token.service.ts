@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { AddOneTimeTokenDto } from './auth.dto';
 import { DbService } from 'src/db/db.service';
-import { MqttService } from 'src/proxy/mqtt.service';
-import { MqttTopic } from 'src/proxy/mqtt-topic.config';
+import { firstValueFrom } from 'rxjs';
+import { AccessTokenGrpc } from 'src/proxy/access-token.grpc';
 
 @Injectable()
 export default class AccessTokenService {
   constructor(
     private dbService: DbService,
-    private mqttService: MqttService,
+    private accessTokenGrpc: AccessTokenGrpc,
   ) {}
 
   public async generateAccessToken(data: {
@@ -18,44 +18,42 @@ export default class AccessTokenService {
     imageUrl?: string;
     durationType?: '1d' | '10m';
   }) {
-    const duration = data.durationType === '1d' ? 86400000 : 600000; //milliseconds
     if (process.env.IS_MICROSERVICE) {
-      return this.mqttService.publish(MqttTopic.GENERATE_ACCESS_TOKEN, {
-        userId: data.userId,
-        username: data.username,
-        email: data.email,
-        imageUrl: data.imageUrl,
-        duration,
-      });
+      const result = await firstValueFrom(
+        this.accessTokenGrpc.client.generateAccessToken({
+          userId: !Number.isNaN(data.userId) ? Number(data.userId) : undefined,
+          username: data.username,
+          email: data.email,
+          imageUrl: data.imageUrl,
+          durationType: data.durationType,
+        }),
+      );
+      return result;
     }
-    return '';
+    return {
+      accessToken: '',
+      expiresAtUtc: 0,
+    };
   }
 
   public async verifyAccessToken(token: string) {
     if (process.env.IS_MICROSERVICE) {
-      const verifiedResult = await this.mqttService.publish(
-        MqttTopic.VERIFY_ACCESS_TOKEN,
-        {
-          token,
-        },
+      const result = await firstValueFrom(
+        this.accessTokenGrpc.client.verifyAccessToken({
+          accessToken: token,
+        }),
       );
-      if (verifiedResult.error) {
-        throw new Error(verifiedResult.error);
+      if (result.isValid) {
+        return {
+          ...result,
+        };
       }
-      return {
-        ...verifiedResult,
-        userId: verifiedResult.user_id,
-        imageUrl: verifiedResult.image_url,
-      };
     }
     throw new Error('Cannot verify access token');
   }
 
   public async addOneTimeAccessToken(data: AddOneTimeTokenDto) {
-    const tokenResult: {
-      token: string;
-      expiredAt: string;
-    } = await this.generateAccessToken({
+    const tokenResult = await this.generateAccessToken({
       username: data.username,
       email: data.email,
       durationType: '10m',
@@ -63,7 +61,7 @@ export default class AccessTokenService {
 
     await this.dbService.client.oneTimeAccessToken.create({
       data: {
-        token: tokenResult.token,
+        token: tokenResult.accessToken,
         email: data.email,
         username: data.username,
       },
