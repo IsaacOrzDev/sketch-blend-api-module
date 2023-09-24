@@ -27,7 +27,7 @@ message GetDocumentListRequest {
 }
 
 message GetDocumentListReply {
-  repeated Document document = 1;
+  repeated Document documents = 1;
 }
 
 message GetDocumentRequest {
@@ -60,6 +60,6 @@ message Document {
   string id = 1;
   string title = 2;
   string content = 3;
-  int64 created_at = 4;
-  int64 updated_at = 5;
+  int64 createdAt = 4;
+  int64 updatedAt = 5;
 }

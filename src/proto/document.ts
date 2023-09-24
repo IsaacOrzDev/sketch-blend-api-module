@@ -19,7 +19,7 @@ export interface GetDocumentListRequest {
 }
 
 export interface GetDocumentListReply {
-  document: Document[];
+  documents: Document[];
 }
 
 export interface GetDocumentRequest {
