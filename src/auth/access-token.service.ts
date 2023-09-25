@@ -1,16 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { AddOneTimeTokenDto } from './auth.dto';
-import { DbService } from 'src/db/db.service';
 import { firstValueFrom } from 'rxjs';
 import { AccessTokenGrpc } from 'src/proxy/access-token.grpc';
 import * as dayjs from 'dayjs';
 
 @Injectable()
 export default class AccessTokenService {
-  constructor(
-    private dbService: DbService,
-    private accessTokenGrpc: AccessTokenGrpc,
-  ) {}
+  constructor(private accessTokenGrpc: AccessTokenGrpc) {}
 
   public async generateAccessToken(data: {
     userId?: string;
@@ -28,7 +24,6 @@ export default class AccessTokenService {
         durationType: data.durationType,
       }),
     );
-    console.log('result.expiresAtUtc.seconds', result.expiresAtUtc.seconds);
     return {
       ...result,
       expiresAtUtc: dayjs
@@ -52,46 +47,24 @@ export default class AccessTokenService {
   }
 
   public async addOneTimeAccessToken(data: AddOneTimeTokenDto) {
-    const tokenResult = await this.generateAccessToken({
-      username: data.username,
-      email: data.email,
-      durationType: '10m',
-    });
-
-    await this.dbService.client.oneTimeAccessToken.create({
-      data: {
-        token: tokenResult.accessToken,
+    const tokenResult = await firstValueFrom(
+      this.accessTokenGrpc.client.addOneTimeAccessToken({
         email: data.email,
         username: data.username,
-      },
-    });
+        durationType: '10m',
+      }),
+    );
 
     return tokenResult;
   }
 
   public async verifyOneTimeAccessToken(token: string) {
-    const tokenRecord =
-      await this.dbService.client.oneTimeAccessToken.findUnique({
-        where: {
-          token,
-        },
-      });
+    const verifyResult = await firstValueFrom(
+      this.accessTokenGrpc.client.verifyOneTimeAccessToken({
+        accessToken: token,
+      }),
+    );
 
-    if (!tokenRecord) {
-      throw new Error('Token is not valid');
-    }
-
-    await this.verifyAccessToken(token);
-
-    await this.dbService.client.oneTimeAccessToken.delete({
-      where: {
-        id: tokenRecord.id,
-      },
-    });
-
-    return {
-      email: tokenRecord.email,
-      username: tokenRecord.username,
-    };
+    return verifyResult;
   }
 }
