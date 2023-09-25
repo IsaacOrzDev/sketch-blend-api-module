@@ -1,6 +1,8 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { wrappers } from "protobufjs";
 import { Observable } from "rxjs";
+import { Struct } from "../google/protobuf/struct";
 
 export const protobufPackage = "user";
 
@@ -8,47 +10,61 @@ export const protobufPackage = "user";
 export interface CreateUserRequest {
   name: string;
   email?: string | undefined;
+  login: Login | undefined;
 }
 
-/** The response message containing the greetings. */
-export interface UserReply {
+export interface Login {
+  method: string;
+  /** optional google.protobuf.Any data = 2; */
+  data?: { [key: string]: any } | undefined;
+  imageUrl?: string | undefined;
+}
+
+export interface FindUserRequest {
+  name?: string | undefined;
+  email?: string | undefined;
+  loginMethod?: string | undefined;
+}
+
+export interface LoginUserRequest {
+  id: number;
+  login: Login | undefined;
+}
+
+export interface User {
   id: number;
   name: string;
-  email: string;
+  email?: string | undefined;
+  imageUrl?: string | undefined;
 }
 
-export interface TestingRequest {
-}
-
-export interface TestingReply {
-  message: string;
+export interface UserReply {
+  user?: User | undefined;
 }
 
 export const USER_PACKAGE_NAME = "user";
 
-/** The greeting service definition. */
+wrappers[".google.protobuf.Struct"] = { fromObject: Struct.wrap, toObject: Struct.unwrap } as any;
 
 export interface UserServiceClient {
-  /** Sends a greeting */
-
   createUser(request: CreateUserRequest): Observable<UserReply>;
 
-  testing(request: TestingRequest): Observable<TestingReply>;
+  findUser(request: FindUserRequest): Observable<UserReply>;
+
+  loginUser(request: LoginUserRequest): Observable<UserReply>;
 }
 
-/** The greeting service definition. */
-
 export interface UserServiceController {
-  /** Sends a greeting */
-
   createUser(request: CreateUserRequest): Promise<UserReply> | Observable<UserReply> | UserReply;
 
-  testing(request: TestingRequest): Promise<TestingReply> | Observable<TestingReply> | TestingReply;
+  findUser(request: FindUserRequest): Promise<UserReply> | Observable<UserReply> | UserReply;
+
+  loginUser(request: LoginUserRequest): Promise<UserReply> | Observable<UserReply> | UserReply;
 }
 
 export function UserServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["createUser", "testing"];
+    const grpcMethods: string[] = ["createUser", "findUser", "loginUser"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("UserService", method)(constructor.prototype[method], method, descriptor);

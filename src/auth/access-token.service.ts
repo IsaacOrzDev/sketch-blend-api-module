@@ -31,7 +31,9 @@ export default class AccessTokenService {
     console.log('result.expiresAtUtc.seconds', result.expiresAtUtc.seconds);
     return {
       ...result,
-      expiresAtUtc: dayjs.unix(result.expiresAtUtc.seconds.low).toDate(),
+      expiresAtUtc: dayjs
+        .unix((result.expiresAtUtc.seconds as any).low)
+        .toDate(),
     };
   }
 

@@ -1,33 +1,51 @@
 syntax = "proto3";
 
-option csharp_namespace = "demo_system_sub";
+import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
+
+option csharp_namespace = "demo_system_user_module";
 
 package user;
 
-// The greeting service definition.
 service UserService {
-  // Sends a greeting
   rpc CreateUser (CreateUserRequest) returns (UserReply);
-  rpc Testing (TestingRequest) returns (TestingReply);
+  rpc FindUser (FindUserRequest) returns (UserReply);
+  rpc LoginUser (LoginUserRequest) returns (UserReply);
+
 }
 
 // The request message containing the user's name.
 message CreateUserRequest {
   string name = 1;
   optional string email = 2;
+  Login login = 3;
 }
 
-// The response message containing the greetings.
-message UserReply {
+message Login {
+  string method = 1;
+  // optional google.protobuf.Any data = 2;
+  optional google.protobuf.Struct data = 2;
+  optional string imageUrl = 3;
+}
+
+message FindUserRequest {
+  optional string name = 1;
+  optional string email = 2;
+  optional string loginMethod = 3;
+}
+
+message LoginUserRequest {
+  uint32 id = 1;
+  Login login = 2;
+}
+
+message User {
   uint32 id = 1;
   string name = 2;
-  string email = 3;
+  optional string email = 3;
+  optional string imageUrl = 4;
 }
 
-message TestingRequest {
-
-}
-
-message TestingReply {
-  string message = 1;
+message UserReply {
+  optional User user = 1;
 }

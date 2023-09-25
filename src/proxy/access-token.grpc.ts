@@ -4,7 +4,7 @@ import {
   ACCESS_TOKEN_PACKAGE_NAME,
   ACCESS_TOKEN_SERVICE_NAME,
   AccessTokenServiceClient,
-} from 'src/proto/access_token';
+} from 'src/grpc/proto/access_token';
 
 @Injectable()
 export class AccessTokenGrpc {

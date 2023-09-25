@@ -5,7 +5,7 @@ import {
   GENERATOR_PACKAGE_NAME,
   GENERATOR_SERVICE_NAME,
   GeneratorServiceClient,
-} from 'src/proto/generator';
+} from 'src/grpc/proto/generator';
 
 @Injectable()
 export class GeneratorGrpc {

@@ -6,6 +6,8 @@ import * as FormData from 'form-data';
 import { UserService } from 'src/user/user.service';
 import { LoginMethod } from '@prisma/client';
 import AccessTokenService from './access-token.service';
+import { UserGrpc } from 'src/proxy/user.grpc';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +17,7 @@ export class AuthService {
     private emailService: EmailService,
     private userService: UserService,
     private accessTokenService: AccessTokenService,
+    private userGrpc: UserGrpc,
   ) {
     this.googleClient = new GoogleOAuth2Client(
       process.env.GOOGLE_CLIENT_ID,
@@ -49,25 +52,38 @@ export class AuthService {
       name: data.name,
       method: data.method,
     });
-    if (!findUserResult) {
-      await this.userService.createUser({
-        name: data.name,
+
+    const userResult = await firstValueFrom(
+      this.userGrpc.client.findUser({
         email: data.email,
-        login: {
-          method: data.method,
-          data: data.data,
-          imageUrl: data.imageUrl,
-        },
-      });
+        name: data.name,
+        loginMethod: data.method,
+      }),
+    );
+
+    if (!userResult.user) {
+      await firstValueFrom(
+        this.userGrpc.client.createUser({
+          name: data.name,
+          email: data.email,
+          login: {
+            method: data.method,
+            data: data.data,
+            imageUrl: data.imageUrl,
+          },
+        }),
+      );
     } else {
-      await this.userService.loginUser({
-        id: findUserResult.id,
-        login: {
-          method: data.method,
-          data: data.data,
-          imageUrl: data.imageUrl,
-        },
-      });
+      await firstValueFrom(
+        this.userGrpc.client.loginUser({
+          id: userResult.user.id,
+          login: {
+            method: data.method,
+            data: data.data,
+            imageUrl: data.imageUrl,
+          },
+        }),
+      );
     }
 
     const token = await this.accessTokenService.generateAccessToken({
@@ -77,8 +93,6 @@ export class AuthService {
       durationType: '1d',
     });
 
-    console.log('token', token);
-
     return {
       ...token,
       isFirstTime: !findUserResult,
@@ -86,7 +100,6 @@ export class AuthService {
   }
 
   public async authenticateGoogleUser(code: string) {
-    console.log('code', code);
     const tokenResult = await this.googleClient.getToken(code);
     const payload = await this.verifyGoogleIdToken(tokenResult.tokens.id_token);
     return this.processAuthentication({

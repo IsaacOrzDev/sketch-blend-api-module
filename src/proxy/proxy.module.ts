@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
-import { USER_PACKAGE_NAME } from 'src/proto/user';
+import { USER_PACKAGE_NAME } from 'src/grpc/proto/user';
 import { join } from 'path';
-import { ACCESS_TOKEN_PACKAGE_NAME } from 'src/proto/access_token';
+import { ACCESS_TOKEN_PACKAGE_NAME } from 'src/grpc/proto/access_token';
 import { AccessTokenGrpc } from './access-token.grpc';
-import { GENERATOR_PACKAGE_NAME } from 'src/proto/generator';
+import { GENERATOR_PACKAGE_NAME } from 'src/grpc/proto/generator';
 import { UserGrpc } from './user.grpc';
 import { GeneratorGrpc } from './generator.grpc';
-import { DOCUMENT_PACKAGE_NAME } from 'src/proto/document';
+import { DOCUMENT_PACKAGE_NAME } from 'src/grpc/proto/document';
 import { DocumentGrpc } from './document.grpc';
 
 @Module({

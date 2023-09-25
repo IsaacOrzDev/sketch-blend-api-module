@@ -4,7 +4,7 @@ import {
   DOCUMENT_PACKAGE_NAME,
   DOCUMENT_SERVICE_NAME,
   DocumentServiceClient,
-} from 'src/proto/document';
+} from 'src/grpc/proto/document';
 
 @Injectable()
 export class DocumentGrpc {

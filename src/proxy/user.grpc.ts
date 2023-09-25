@@ -4,7 +4,7 @@ import {
   USER_PACKAGE_NAME,
   USER_SERVICE_NAME,
   UserServiceClient,
-} from 'src/proto/user';
+} from 'src/grpc/proto/user';
 
 @Injectable()
 export class UserGrpc {
