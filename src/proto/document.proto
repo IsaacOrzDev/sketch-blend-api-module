@@ -4,6 +4,8 @@ option go_package = "./proto";
 
 package document;
 
+import "google/protobuf/timestamp.proto";
+
 service DocumentService {
   rpc SaveDocument(SaveDocumentRequest) returns (SaveDocumentReply);
   rpc GetDocumentList(GetDocumentListRequest) returns (GetDocumentListReply);
@@ -60,6 +62,6 @@ message Document {
   string id = 1;
   string title = 2;
   string content = 3;
-  int64 createdAt = 4;
-  int64 updatedAt = 5;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp updatedAt = 5;
 }

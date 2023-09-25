@@ -77,6 +77,8 @@ export class AuthService {
       durationType: '1d',
     });
 
+    console.log('token', token);
+
     return {
       ...token,
       isFirstTime: !findUserResult,
@@ -84,6 +86,7 @@ export class AuthService {
   }
 
   public async authenticateGoogleUser(code: string) {
+    console.log('code', code);
     const tokenResult = await this.googleClient.getToken(code);
     const payload = await this.verifyGoogleIdToken(tokenResult.tokens.id_token);
     return this.processAuthentication({

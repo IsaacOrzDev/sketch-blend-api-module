@@ -1,8 +1,9 @@
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
+import { Timestamp } from '../google/protobuf/timestamp';
 
-export const protobufPackage = "access_token";
+export const protobufPackage = 'access_token';
 
 export interface GenerateAccessTokenRequest {
   userId?: number | undefined;
@@ -14,7 +15,7 @@ export interface GenerateAccessTokenRequest {
 
 export interface AccessTokenReply {
   accessToken: string;
-  expiresAtUtc: number;
+  expiresAtUtc: Timestamp | undefined;
 }
 
 export interface VerifyAccessTokenRequest {
@@ -39,7 +40,7 @@ export interface AddOneTimeAccessTokenRequest {
 
 export interface AddOneTimeAccessTokenReply {
   accessToken: string;
-  expiresAtUtc: number;
+  expiresAtUtc: Timestamp | undefined;
 }
 
 export interface VerifyOneTimeAccessTokenRequest {
@@ -54,54 +55,88 @@ export interface VerifyOneTimeAccessTokenReply {
   imageUrl?: string | undefined;
 }
 
-export const ACCESS_TOKEN_PACKAGE_NAME = "access_token";
+export const ACCESS_TOKEN_PACKAGE_NAME = 'access_token';
 
 export interface AccessTokenServiceClient {
-  generateAccessToken(request: GenerateAccessTokenRequest): Observable<AccessTokenReply>;
+  generateAccessToken(
+    request: GenerateAccessTokenRequest,
+  ): Observable<AccessTokenReply>;
 
-  verifyAccessToken(request: VerifyAccessTokenRequest): Observable<VerifyAccessTokenReply>;
+  verifyAccessToken(
+    request: VerifyAccessTokenRequest,
+  ): Observable<VerifyAccessTokenReply>;
 
-  addOneTimeAccessToken(request: AddOneTimeAccessTokenRequest): Observable<AddOneTimeAccessTokenReply>;
+  addOneTimeAccessToken(
+    request: AddOneTimeAccessTokenRequest,
+  ): Observable<AddOneTimeAccessTokenReply>;
 
-  verifyOneTimeAccessToken(request: VerifyOneTimeAccessTokenRequest): Observable<VerifyOneTimeAccessTokenReply>;
+  verifyOneTimeAccessToken(
+    request: VerifyOneTimeAccessTokenRequest,
+  ): Observable<VerifyOneTimeAccessTokenReply>;
 }
 
 export interface AccessTokenServiceController {
   generateAccessToken(
     request: GenerateAccessTokenRequest,
-  ): Promise<AccessTokenReply> | Observable<AccessTokenReply> | AccessTokenReply;
+  ):
+    | Promise<AccessTokenReply>
+    | Observable<AccessTokenReply>
+    | AccessTokenReply;
 
   verifyAccessToken(
     request: VerifyAccessTokenRequest,
-  ): Promise<VerifyAccessTokenReply> | Observable<VerifyAccessTokenReply> | VerifyAccessTokenReply;
+  ):
+    | Promise<VerifyAccessTokenReply>
+    | Observable<VerifyAccessTokenReply>
+    | VerifyAccessTokenReply;
 
   addOneTimeAccessToken(
     request: AddOneTimeAccessTokenRequest,
-  ): Promise<AddOneTimeAccessTokenReply> | Observable<AddOneTimeAccessTokenReply> | AddOneTimeAccessTokenReply;
+  ):
+    | Promise<AddOneTimeAccessTokenReply>
+    | Observable<AddOneTimeAccessTokenReply>
+    | AddOneTimeAccessTokenReply;
 
   verifyOneTimeAccessToken(
     request: VerifyOneTimeAccessTokenRequest,
-  ): Promise<VerifyOneTimeAccessTokenReply> | Observable<VerifyOneTimeAccessTokenReply> | VerifyOneTimeAccessTokenReply;
+  ):
+    | Promise<VerifyOneTimeAccessTokenReply>
+    | Observable<VerifyOneTimeAccessTokenReply>
+    | VerifyOneTimeAccessTokenReply;
 }
 
 export function AccessTokenServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
-      "generateAccessToken",
-      "verifyAccessToken",
-      "addOneTimeAccessToken",
-      "verifyOneTimeAccessToken",
+      'generateAccessToken',
+      'verifyAccessToken',
+      'addOneTimeAccessToken',
+      'verifyOneTimeAccessToken',
     ];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("AccessTokenService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcMethod('AccessTokenService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("AccessTokenService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcStreamMethod('AccessTokenService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
   };
 }
 
-export const ACCESS_TOKEN_SERVICE_NAME = "AccessTokenService";
+export const ACCESS_TOKEN_SERVICE_NAME = 'AccessTokenService';

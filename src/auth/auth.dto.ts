@@ -35,12 +35,12 @@ export class AuthenticateResponse {
   @ApiProperty({
     type: Date,
   })
-  expiredAt: string;
+  expiresAtUtc: string;
 
   @ApiProperty({
     type: String,
   })
-  token: string;
+  accessToken: string;
 
   @ApiProperty({
     type: Boolean,

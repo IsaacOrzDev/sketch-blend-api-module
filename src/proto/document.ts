@@ -1,8 +1,9 @@
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
+import { Timestamp } from '../google/protobuf/timestamp';
 
-export const protobufPackage = "document";
+export const protobufPackage = 'document';
 
 export interface SaveDocumentRequest {
   title: string;
@@ -52,63 +53,100 @@ export interface Document {
   id: string;
   title: string;
   content: string;
-  createdAt: number;
-  updatedAt: number;
+  createdAt: Timestamp | undefined;
+  updatedAt: Timestamp | undefined;
 }
 
-export const DOCUMENT_PACKAGE_NAME = "document";
+export const DOCUMENT_PACKAGE_NAME = 'document';
 
 export interface DocumentServiceClient {
   saveDocument(request: SaveDocumentRequest): Observable<SaveDocumentReply>;
 
-  getDocumentList(request: GetDocumentListRequest): Observable<GetDocumentListReply>;
+  getDocumentList(
+    request: GetDocumentListRequest,
+  ): Observable<GetDocumentListReply>;
 
   getDocument(request: GetDocumentRequest): Observable<GetDocumentReply>;
 
-  updateDocument(request: UpdateDocumentRequest): Observable<UpdateDocumentReply>;
+  updateDocument(
+    request: UpdateDocumentRequest,
+  ): Observable<UpdateDocumentReply>;
 
-  deleteDocument(request: DeleteDocumentRequest): Observable<DeleteDocumentReply>;
+  deleteDocument(
+    request: DeleteDocumentRequest,
+  ): Observable<DeleteDocumentReply>;
 }
 
 export interface DocumentServiceController {
   saveDocument(
     request: SaveDocumentRequest,
-  ): Promise<SaveDocumentReply> | Observable<SaveDocumentReply> | SaveDocumentReply;
+  ):
+    | Promise<SaveDocumentReply>
+    | Observable<SaveDocumentReply>
+    | SaveDocumentReply;
 
   getDocumentList(
     request: GetDocumentListRequest,
-  ): Promise<GetDocumentListReply> | Observable<GetDocumentListReply> | GetDocumentListReply;
+  ):
+    | Promise<GetDocumentListReply>
+    | Observable<GetDocumentListReply>
+    | GetDocumentListReply;
 
-  getDocument(request: GetDocumentRequest): Promise<GetDocumentReply> | Observable<GetDocumentReply> | GetDocumentReply;
+  getDocument(
+    request: GetDocumentRequest,
+  ):
+    | Promise<GetDocumentReply>
+    | Observable<GetDocumentReply>
+    | GetDocumentReply;
 
   updateDocument(
     request: UpdateDocumentRequest,
-  ): Promise<UpdateDocumentReply> | Observable<UpdateDocumentReply> | UpdateDocumentReply;
+  ):
+    | Promise<UpdateDocumentReply>
+    | Observable<UpdateDocumentReply>
+    | UpdateDocumentReply;
 
   deleteDocument(
     request: DeleteDocumentRequest,
-  ): Promise<DeleteDocumentReply> | Observable<DeleteDocumentReply> | DeleteDocumentReply;
+  ):
+    | Promise<DeleteDocumentReply>
+    | Observable<DeleteDocumentReply>
+    | DeleteDocumentReply;
 }
 
 export function DocumentServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
-      "saveDocument",
-      "getDocumentList",
-      "getDocument",
-      "updateDocument",
-      "deleteDocument",
+      'saveDocument',
+      'getDocumentList',
+      'getDocument',
+      'updateDocument',
+      'deleteDocument',
     ];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("DocumentService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcMethod('DocumentService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("DocumentService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcStreamMethod('DocumentService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
   };
 }
 
-export const DOCUMENT_SERVICE_NAME = "DocumentService";
+export const DOCUMENT_SERVICE_NAME = 'DocumentService';

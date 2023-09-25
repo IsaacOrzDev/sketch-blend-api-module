@@ -3,6 +3,7 @@ import { AddOneTimeTokenDto } from './auth.dto';
 import { DbService } from 'src/db/db.service';
 import { firstValueFrom } from 'rxjs';
 import { AccessTokenGrpc } from 'src/proxy/access-token.grpc';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export default class AccessTokenService {
@@ -18,36 +19,32 @@ export default class AccessTokenService {
     imageUrl?: string;
     durationType?: '1d' | '10m';
   }) {
-    if (process.env.IS_MICROSERVICE) {
-      const result = await firstValueFrom(
-        this.accessTokenGrpc.client.generateAccessToken({
-          userId: !Number.isNaN(data.userId) ? Number(data.userId) : undefined,
-          username: data.username,
-          email: data.email,
-          imageUrl: data.imageUrl,
-          durationType: data.durationType,
-        }),
-      );
-      return result;
-    }
+    const result = await firstValueFrom(
+      this.accessTokenGrpc.client.generateAccessToken({
+        userId: !Number.isNaN(data.userId) ? Number(data.userId) : undefined,
+        username: data.username,
+        email: data.email,
+        imageUrl: data.imageUrl,
+        durationType: data.durationType,
+      }),
+    );
+    console.log('result.expiresAtUtc.seconds', result.expiresAtUtc.seconds);
     return {
-      accessToken: '',
-      expiresAtUtc: 0,
+      ...result,
+      expiresAtUtc: dayjs.unix(result.expiresAtUtc.seconds.low).toDate(),
     };
   }
 
   public async verifyAccessToken(token: string) {
-    if (process.env.IS_MICROSERVICE) {
-      const result = await firstValueFrom(
-        this.accessTokenGrpc.client.verifyAccessToken({
-          accessToken: token,
-        }),
-      );
-      if (result.isValid) {
-        return {
-          ...result,
-        };
-      }
+    const result = await firstValueFrom(
+      this.accessTokenGrpc.client.verifyAccessToken({
+        accessToken: token,
+      }),
+    );
+    if (result.isValid) {
+      return {
+        ...result,
+      };
     }
     throw new Error('Cannot verify access token');
   }
