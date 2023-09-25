@@ -3,8 +3,6 @@ import { OAuth2Client as GoogleOAuth2Client } from 'google-auth-library';
 import { EmailService } from 'src/email/email.service';
 import fetch from 'node-fetch';
 import * as FormData from 'form-data';
-import { UserService } from 'src/user/user.service';
-import { LoginMethod } from '@prisma/client';
 import AccessTokenService from './access-token.service';
 import { UserGrpc } from 'src/proxy/user.grpc';
 import { firstValueFrom } from 'rxjs';
@@ -15,7 +13,6 @@ export class AuthService {
 
   constructor(
     private emailService: EmailService,
-    private userService: UserService,
     private accessTokenService: AccessTokenService,
     private userGrpc: UserGrpc,
   ) {
@@ -44,15 +41,9 @@ export class AuthService {
     email: string;
     name: string;
     imageUrl?: string;
-    method: LoginMethod;
+    method: string;
     data?: any;
   }) {
-    const findUserResult = await this.userService.findUser({
-      email: data.email,
-      name: data.name,
-      method: data.method,
-    });
-
     const userResult = await firstValueFrom(
       this.userGrpc.client.findUser({
         email: data.email,
@@ -95,7 +86,7 @@ export class AuthService {
 
     return {
       ...token,
-      isFirstTime: !findUserResult,
+      isFirstTime: !userResult.user,
     };
   }
 
@@ -106,7 +97,7 @@ export class AuthService {
       email: payload.email,
       name: payload.name,
       imageUrl: payload.picture,
-      method: LoginMethod.GOOGLE,
+      method: 'google',
       data: payload,
     });
   }
@@ -149,7 +140,7 @@ export class AuthService {
       name: userResult.name,
       imageUrl: userResult.avatar_url,
       data: userResult,
-      method: LoginMethod.GITHUB,
+      method: 'github',
     });
   }
 
@@ -172,7 +163,7 @@ export class AuthService {
     return this.processAuthentication({
       email: result.email,
       name: result.username ?? '',
-      method: LoginMethod.PASSWORD_LESS,
+      method: 'password-less',
     });
   }
 }
