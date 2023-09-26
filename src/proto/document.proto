@@ -4,6 +4,7 @@ option go_package = "./proto";
 
 package document;
 
+import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 service DocumentService {
@@ -15,8 +16,7 @@ service DocumentService {
 }
 
 message SaveDocumentRequest {
-  string title = 1;
-  string content = 2;
+  SaveDocumentDto document = 1;
 }
 
 message SaveDocumentReply {
@@ -24,8 +24,8 @@ message SaveDocumentReply {
 }
 
 message GetDocumentListRequest {
-  int32 page = 1;
-  int32 size = 2;
+  optional int32 page = 1;
+  optional int32 size = 2;
 }
 
 message GetDocumentListReply {
@@ -58,10 +58,21 @@ message DeleteDocumentReply {
   string id = 1;
 }
 
+message SaveDocumentDto {
+  string title = 1;
+  optional string description = 2;
+  optional string svg = 3;
+  optional string image = 4;
+  optional google.protobuf.Struct paths = 5;
+}
+
 message Document {
   string id = 1;
   string title = 2;
-  string content = 3;
-  google.protobuf.Timestamp createdAt = 4;
-  google.protobuf.Timestamp updatedAt = 5;
+  optional string description = 3;
+  optional string svg = 4;
+  optional string image = 5;
+  optional google.protobuf.Struct paths = 6;
+  google.protobuf.Timestamp createdAt = 7;
+  google.protobuf.Timestamp updatedAt = 8;
 }

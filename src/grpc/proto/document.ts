@@ -1,13 +1,14 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { wrappers } from "protobufjs";
 import { Observable } from "rxjs";
+import { Struct } from "../google/protobuf/struct";
 import { Timestamp } from "../google/protobuf/timestamp";
 
 export const protobufPackage = "document";
 
 export interface SaveDocumentRequest {
-  title: string;
-  content: string;
+  document: SaveDocumentDto | undefined;
 }
 
 export interface SaveDocumentReply {
@@ -15,8 +16,8 @@ export interface SaveDocumentReply {
 }
 
 export interface GetDocumentListRequest {
-  page: number;
-  size: number;
+  page?: number | undefined;
+  size?: number | undefined;
 }
 
 export interface GetDocumentListReply {
@@ -49,15 +50,28 @@ export interface DeleteDocumentReply {
   id: string;
 }
 
+export interface SaveDocumentDto {
+  title: string;
+  description?: string | undefined;
+  svg?: string | undefined;
+  image?: string | undefined;
+  paths?: { [key: string]: any } | undefined;
+}
+
 export interface Document {
   id: string;
   title: string;
-  content: string;
+  description?: string | undefined;
+  svg?: string | undefined;
+  image?: string | undefined;
+  paths?: { [key: string]: any } | undefined;
   createdAt: Timestamp | undefined;
   updatedAt: Timestamp | undefined;
 }
 
 export const DOCUMENT_PACKAGE_NAME = "document";
+
+wrappers[".google.protobuf.Struct"] = { fromObject: Struct.wrap, toObject: Struct.unwrap } as any;
 
 export interface DocumentServiceClient {
   saveDocument(request: SaveDocumentRequest): Observable<SaveDocumentReply>;

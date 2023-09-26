@@ -2,11 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { AddOneTimeTokenDto } from './auth.dto';
 import { firstValueFrom } from 'rxjs';
 import { AccessTokenGrpc } from 'src/proxy/access-token.grpc';
-import * as dayjs from 'dayjs';
+import FormatUtils from 'src/common/format.utils';
 
 @Injectable()
 export default class AccessTokenService {
-  constructor(private accessTokenGrpc: AccessTokenGrpc) {}
+  constructor(
+    private accessTokenGrpc: AccessTokenGrpc,
+    private formatUtils: FormatUtils,
+  ) {}
 
   public async generateAccessToken(data: {
     userId?: string;
@@ -26,9 +29,7 @@ export default class AccessTokenService {
     );
     return {
       ...result,
-      expiresAtUtc: dayjs
-        .unix((result.expiresAtUtc.seconds as any).low)
-        .toDate(),
+      expiresAtUtc: this.formatUtils.formatTimestamp(result.expiresAtUtc),
     };
   }
 

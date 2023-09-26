@@ -24,9 +24,12 @@ export class TokenGuard implements CanActivate {
     }
 
     try {
-      if (!(await this.accessTokenService.verifyAccessToken(token)).isValid) {
+      const data = await this.accessTokenService.verifyAccessToken(token);
+      if (!data.isValid) {
         throw new UnauthorizedException();
       }
+
+      request.user = data;
 
       return true;
     } catch (err) {
