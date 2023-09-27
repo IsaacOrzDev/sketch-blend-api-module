@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import {
-  SaveDocumentDto as SaveDocumentData,
-  SaveDocumentReply,
-} from 'src/grpc/proto/document';
+import { SaveDocumentData, SaveDocumentReply } from 'src/grpc/proto/document';
 
 export class SaveDocumentDto implements SaveDocumentData {
   @ApiProperty({

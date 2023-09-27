@@ -16,7 +16,9 @@ service DocumentService {
 }
 
 message SaveDocumentRequest {
-  SaveDocumentDto document = 1;
+  SaveDocumentData document = 1;
+  uint32 userId = 2;
+
 }
 
 message SaveDocumentReply {
@@ -24,8 +26,9 @@ message SaveDocumentReply {
 }
 
 message GetDocumentListRequest {
-  optional int32 page = 1;
-  optional int32 size = 2;
+  optional int32 userId = 1;
+  optional int32 offset = 2;
+  optional int32 limit = 3;
 }
 
 message GetDocumentListReply {
@@ -58,7 +61,7 @@ message DeleteDocumentReply {
   string id = 1;
 }
 
-message SaveDocumentDto {
+message SaveDocumentData {
   string title = 1;
   optional string description = 2;
   optional string svg = 3;
@@ -68,11 +71,12 @@ message SaveDocumentDto {
 
 message Document {
   string id = 1;
-  string title = 2;
-  optional string description = 3;
-  optional string svg = 4;
-  optional string image = 5;
-  optional google.protobuf.Struct paths = 6;
-  google.protobuf.Timestamp createdAt = 7;
-  google.protobuf.Timestamp updatedAt = 8;
+  uint32 userId = 2;
+  string title = 3;
+  optional string description = 4;
+  optional string svg = 5;
+  optional string image = 6;
+  optional google.protobuf.Struct paths = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
 }

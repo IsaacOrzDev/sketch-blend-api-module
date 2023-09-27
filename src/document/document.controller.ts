@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import { TokenGuard } from 'src/auth/guard/token.guard';
@@ -19,11 +27,12 @@ export class DocumentController {
   @ApiBearerAuth()
   @UseGuards(TokenGuard)
   @Get('/')
-  async getList() {
+  async getList(@User() user: AuthUser) {
     const result = await firstValueFrom(
       this.documentGrpc.client.getDocumentList({
-        page: 0,
-        size: 10,
+        userId: user.userId,
+        offset: 0,
+        limit: 10,
       }),
     );
     return result.documents.map((document) => ({
@@ -36,14 +45,21 @@ export class DocumentController {
   @ApiBearerAuth()
   @UseGuards(TokenGuard)
   @Get('/:id')
-  async getOne() {
+  async getOne(@User() user: AuthUser) {
     const result = await firstValueFrom(
       this.documentGrpc.client.getDocument({
         id: 'id',
       }),
     );
+    if (result.document.userId !== user.userId) {
+      throw new Error('Not allowed');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { userId, ...documentData } = result.document;
+
     return {
-      ...result.document,
+      ...documentData,
       createdAt: this.formatUtils.formatTimestamp(result.document.createdAt),
       updatedAt: this.formatUtils.formatTimestamp(result.document.updatedAt),
     };
@@ -57,13 +73,55 @@ export class DocumentController {
   @UseGuards(TokenGuard)
   @Post('/')
   saveDocument(@User() user: AuthUser, @Body() dto: SaveDocumentDto) {
-    console.log('user', user);
     return firstValueFrom(
       this.documentGrpc.client.saveDocument({
-        document: {
-          ...dto,
-        },
+        document: dto,
+        userId: user.userId,
       }),
     );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(TokenGuard)
+  @Patch('/:id')
+  async updateDocument(@User() user: AuthUser, @Body() dto: { id: string }) {
+    const result = await firstValueFrom(
+      this.documentGrpc.client.getDocument({
+        id: dto.id,
+      }),
+    );
+
+    if (result.document.userId !== user.userId) {
+      throw new Error('Not allowed');
+    }
+
+    // return firstValueFrom(
+    //   this.documentGrpc.client.updateDocument({
+    //     document: dto,
+    //     userId: user.userId,
+    //   }),
+    // );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(TokenGuard)
+  @Delete('/:id')
+  async deleteDocument(@User() user: AuthUser, @Body() dto: { id: string }) {
+    const result = await firstValueFrom(
+      this.documentGrpc.client.getDocument({
+        id: dto.id,
+      }),
+    );
+
+    if (result.document.userId !== user.userId) {
+      throw new Error('Not allowed');
+    }
+
+    // return firstValueFrom(
+    //   this.documentGrpc.client.deleteDocument({
+    //     document: dto,
+    //     userId: user.userId,
+    //   }),
+    // );
   }
 }
