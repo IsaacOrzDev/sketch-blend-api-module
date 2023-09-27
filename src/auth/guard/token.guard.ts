@@ -10,14 +10,18 @@ import AccessTokenService from '../access-token.service';
 export class TokenGuard implements CanActivate {
   constructor(private accessTokenService: AccessTokenService) {}
 
-  private extractTokenFromHeader(request: Request) {
+  private extractToken(request: Request & { cookies?: any }) {
+    if (request.cookies?.access_token) {
+      return request.cookies.access_token;
+    }
+
     const [type, token] = request.headers['authorization']?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const token = this.extractToken(request);
 
     if (!token) {
       throw new UnauthorizedException();
