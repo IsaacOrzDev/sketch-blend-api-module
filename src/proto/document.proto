@@ -45,8 +45,7 @@ message GetDocumentReply {
 
 message UpdateDocumentRequest {
   string id = 1;
-  string title = 2;
-  string content = 3;
+  SaveDocumentData data = 2;
 }
 
 message UpdateDocumentReply {

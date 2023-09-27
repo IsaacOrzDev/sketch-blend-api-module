@@ -20,6 +20,7 @@ import {
   GetDocumentResponse,
   SaveDocumentDto,
   SaveDocumentResponse,
+  UpdateDocumentDto,
 } from './document.dto';
 import { ApiFormattedResponse } from 'src/decorator/api-response';
 
@@ -105,7 +106,7 @@ export class DocumentController {
   @ApiBearerAuth()
   @UseGuards(TokenGuard)
   @Patch('/:id')
-  async updateDocument(@User() user: AuthUser, @Body() dto: { id: string }) {
+  async updateDocument(@User() user: AuthUser, @Body() dto: UpdateDocumentDto) {
     const result = await firstValueFrom(
       this.documentGrpc.client.getDocument({
         id: dto.id,
@@ -116,12 +117,15 @@ export class DocumentController {
       throw new Error('Not allowed');
     }
 
-    // return firstValueFrom(
-    //   this.documentGrpc.client.updateDocument({
-    //     document: dto,
-    //     userId: user.userId,
-    //   }),
-    // );
+    return firstValueFrom(
+      this.documentGrpc.client.updateDocument({
+        data: {
+          title: dto.data.title,
+          ...dto.data,
+        },
+        id: dto.id,
+      }),
+    );
   }
 
   @ApiBearerAuth()
@@ -138,11 +142,10 @@ export class DocumentController {
       throw new Error('Not allowed');
     }
 
-    // return firstValueFrom(
-    //   this.documentGrpc.client.deleteDocument({
-    //     document: dto,
-    //     userId: user.userId,
-    //   }),
-    // );
+    return firstValueFrom(
+      this.documentGrpc.client.deleteDocument({
+        id: dto.id,
+      }),
+    );
   }
 }

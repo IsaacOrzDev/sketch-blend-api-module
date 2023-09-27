@@ -45,7 +45,7 @@ export class SaveDocumentResponse implements SaveDocumentReply {
   id: string;
 }
 
-class DocumentDto
+class DocumentRecord
   implements Omit<Document, 'userId' | 'createdAt' | 'updatedAt'>
 {
   @ApiProperty({
@@ -87,7 +87,7 @@ class DocumentDto
   updatedAt: Date;
 }
 
-class DocumentDetailDto extends DocumentDto {
+class DocumentDetailRecord extends DocumentRecord {
   @ApiProperty({
     type: Object,
     nullable: true,
@@ -97,10 +97,10 @@ class DocumentDetailDto extends DocumentDto {
 
 export class GetDocumentListResponse {
   @ApiProperty({
-    type: DocumentDto,
+    type: DocumentRecord,
     isArray: true,
   })
-  records: DocumentDto[];
+  records: DocumentRecord[];
 }
 
 export class GetDocumentDto {
@@ -112,7 +112,51 @@ export class GetDocumentDto {
 
 export class GetDocumentResponse {
   @ApiProperty({
-    type: DocumentDetailDto,
+    type: DocumentDetailRecord,
   })
-  record: DocumentDetailDto;
+  record: DocumentDetailRecord;
+}
+
+export class UpdateDocumentDataDto {
+  @ApiProperty({
+    type: String,
+    nullable: true,
+  })
+  title?: string;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+  })
+  description?: string;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+  })
+  svg?: string;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+  })
+  image?: string;
+
+  @ApiProperty({
+    type: Object,
+    nullable: true,
+  })
+  paths?: { [key: string]: any };
+}
+
+export class UpdateDocumentDto {
+  @ApiProperty({
+    type: String,
+  })
+  id: string;
+
+  @ApiProperty({
+    type: SaveDocumentDto,
+  })
+  data: UpdateDocumentDataDto;
 }

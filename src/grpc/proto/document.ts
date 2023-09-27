@@ -36,8 +36,7 @@ export interface GetDocumentReply {
 
 export interface UpdateDocumentRequest {
   id: string;
-  title: string;
-  content: string;
+  data: SaveDocumentData | undefined;
 }
 
 export interface UpdateDocumentReply {
