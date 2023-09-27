@@ -16,7 +16,7 @@ service DocumentService {
 }
 
 message SaveDocumentRequest {
-  SaveDocumentData document = 1;
+  SaveDocumentData data = 1;
   uint32 userId = 2;
 
 }
@@ -32,7 +32,7 @@ message GetDocumentListRequest {
 }
 
 message GetDocumentListReply {
-  repeated Document documents = 1;
+  repeated Document records = 1;
 }
 
 message GetDocumentRequest {
@@ -40,7 +40,7 @@ message GetDocumentRequest {
 }
 
 message GetDocumentReply {
-  Document document = 1;
+  Document record = 1;
 }
 
 message UpdateDocumentRequest {

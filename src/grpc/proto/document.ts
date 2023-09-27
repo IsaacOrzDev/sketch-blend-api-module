@@ -8,7 +8,7 @@ import { Timestamp } from "../google/protobuf/timestamp";
 export const protobufPackage = "document";
 
 export interface SaveDocumentRequest {
-  document: SaveDocumentData | undefined;
+  data: SaveDocumentData | undefined;
   userId: number;
 }
 
@@ -23,7 +23,7 @@ export interface GetDocumentListRequest {
 }
 
 export interface GetDocumentListReply {
-  documents: Document[];
+  records: Document[];
 }
 
 export interface GetDocumentRequest {
@@ -31,7 +31,7 @@ export interface GetDocumentRequest {
 }
 
 export interface GetDocumentReply {
-  document: Document | undefined;
+  record: Document | undefined;
 }
 
 export interface UpdateDocumentRequest {

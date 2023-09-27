@@ -13,7 +13,12 @@ import { TokenGuard } from 'src/auth/guard/token.guard';
 import FormatUtils from 'src/common/format.utils';
 import { AuthUser, User } from 'src/decorator/user';
 import { DocumentGrpc } from 'src/proxy/document.grpc';
-import { SaveDocumentDto, SaveDocumentResponse } from './document.dto';
+import {
+  GetDocumentListResponse,
+  GetDocumentResponse,
+  SaveDocumentDto,
+  SaveDocumentResponse,
+} from './document.dto';
 import { ApiFormattedResponse } from 'src/decorator/api-response';
 
 @ApiTags('Documents')
@@ -25,6 +30,9 @@ export class DocumentController {
   ) {}
 
   @ApiBearerAuth()
+  @ApiFormattedResponse({
+    type: GetDocumentListResponse,
+  })
   @UseGuards(TokenGuard)
   @Get('/')
   async getList(@User() user: AuthUser) {
@@ -35,14 +43,19 @@ export class DocumentController {
         limit: 10,
       }),
     );
-    return result.documents.map((document) => ({
-      ...document,
-      createdAt: this.formatUtils.formatTimestamp(document.createdAt),
-      updatedAt: this.formatUtils.formatTimestamp(document.updatedAt),
-    }));
+    return {
+      records: result.records.map((document) => ({
+        ...document,
+        createdAt: this.formatUtils.formatTimestamp(document.createdAt),
+        updatedAt: this.formatUtils.formatTimestamp(document.updatedAt),
+      })),
+    };
   }
 
   @ApiBearerAuth()
+  @ApiFormattedResponse({
+    type: GetDocumentResponse,
+  })
   @UseGuards(TokenGuard)
   @Get('/:id')
   async getOne(@User() user: AuthUser) {
@@ -51,17 +64,19 @@ export class DocumentController {
         id: 'id',
       }),
     );
-    if (result.document.userId !== user.userId) {
+    if (result.record.userId !== user.userId) {
       throw new Error('Not allowed');
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { userId, ...documentData } = result.document;
+    const { userId, ...documentData } = result.record;
 
     return {
-      ...documentData,
-      createdAt: this.formatUtils.formatTimestamp(result.document.createdAt),
-      updatedAt: this.formatUtils.formatTimestamp(result.document.updatedAt),
+      record: {
+        ...documentData,
+        createdAt: this.formatUtils.formatTimestamp(result.record.createdAt),
+        updatedAt: this.formatUtils.formatTimestamp(result.record.updatedAt),
+      },
     };
   }
 
@@ -75,7 +90,7 @@ export class DocumentController {
   saveDocument(@User() user: AuthUser, @Body() dto: SaveDocumentDto) {
     return firstValueFrom(
       this.documentGrpc.client.saveDocument({
-        document: dto,
+        data: dto,
         userId: user.userId,
       }),
     );
@@ -91,7 +106,7 @@ export class DocumentController {
       }),
     );
 
-    if (result.document.userId !== user.userId) {
+    if (result.record.userId !== user.userId) {
       throw new Error('Not allowed');
     }
 
@@ -113,7 +128,7 @@ export class DocumentController {
       }),
     );
 
-    if (result.document.userId !== user.userId) {
+    if (result.record.userId !== user.userId) {
       throw new Error('Not allowed');
     }
 
