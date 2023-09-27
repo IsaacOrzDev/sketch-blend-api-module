@@ -40,7 +40,7 @@ message GetDocumentRequest {
 }
 
 message GetDocumentReply {
-  Document record = 1;
+  DocumentDetail record = 1;
 }
 
 message UpdateDocumentRequest {
@@ -70,6 +70,17 @@ message SaveDocumentData {
 }
 
 message Document {
+  string id = 1;
+  uint32 userId = 2;
+  string title = 3;
+  optional string description = 4;
+  optional string svg = 5;
+  optional string image = 6;
+  google.protobuf.Timestamp createdAt = 7;
+  google.protobuf.Timestamp updatedAt = 8;
+}
+
+message DocumentDetail {
   string id = 1;
   uint32 userId = 2;
   string title = 3;

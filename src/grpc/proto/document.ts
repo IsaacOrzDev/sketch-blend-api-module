@@ -31,7 +31,7 @@ export interface GetDocumentRequest {
 }
 
 export interface GetDocumentReply {
-  record: Document | undefined;
+  record: DocumentDetail | undefined;
 }
 
 export interface UpdateDocumentRequest {
@@ -61,6 +61,17 @@ export interface SaveDocumentData {
 }
 
 export interface Document {
+  id: string;
+  userId: number;
+  title: string;
+  description?: string | undefined;
+  svg?: string | undefined;
+  image?: string | undefined;
+  createdAt: Timestamp | undefined;
+  updatedAt: Timestamp | undefined;
+}
+
+export interface DocumentDetail {
   id: string;
   userId: number;
   title: string;

@@ -87,6 +87,14 @@ class DocumentDto
   updatedAt: Date;
 }
 
+class DocumentDetailDto extends DocumentDto {
+  @ApiProperty({
+    type: Object,
+    nullable: true,
+  })
+  paths?: { [key: string]: any };
+}
+
 export class GetDocumentListResponse {
   @ApiProperty({
     type: DocumentDto,
@@ -95,9 +103,16 @@ export class GetDocumentListResponse {
   records: DocumentDto[];
 }
 
+export class GetDocumentDto {
+  @ApiProperty({
+    type: String,
+  })
+  id: string;
+}
+
 export class GetDocumentResponse {
   @ApiProperty({
-    type: DocumentDto,
+    type: DocumentDetailDto,
   })
-  record: DocumentDto;
+  record: DocumentDetailDto;
 }

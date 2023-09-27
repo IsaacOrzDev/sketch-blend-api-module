@@ -44,6 +44,7 @@ export class AuthService {
     method: string;
     data?: any;
   }) {
+    let userId = undefined;
     const userResult = await firstValueFrom(
       this.userGrpc.client.findUser({
         email: data.email,
@@ -53,7 +54,7 @@ export class AuthService {
     );
 
     if (!userResult.user) {
-      await firstValueFrom(
+      const newUserResult = await firstValueFrom(
         this.userGrpc.client.createUser({
           name: data.name,
           email: data.email,
@@ -64,7 +65,9 @@ export class AuthService {
           },
         }),
       );
+      userId = newUserResult.user.id;
     } else {
+      userId = userResult.user.id;
       await firstValueFrom(
         this.userGrpc.client.loginUser({
           id: userResult.user.id,
@@ -78,6 +81,7 @@ export class AuthService {
     }
 
     const token = await this.accessTokenService.generateAccessToken({
+      userId,
       username: data.name,
       email: data.email,
       imageUrl: data.imageUrl,

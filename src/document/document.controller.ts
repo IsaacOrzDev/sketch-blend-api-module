@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   UseGuards,
@@ -14,6 +15,7 @@ import FormatUtils from 'src/common/format.utils';
 import { AuthUser, User } from 'src/decorator/user';
 import { DocumentGrpc } from 'src/proxy/document.grpc';
 import {
+  GetDocumentDto,
   GetDocumentListResponse,
   GetDocumentResponse,
   SaveDocumentDto,
@@ -44,11 +46,13 @@ export class DocumentController {
       }),
     );
     return {
-      records: result.records.map((document) => ({
-        ...document,
-        createdAt: this.formatUtils.formatTimestamp(document.createdAt),
-        updatedAt: this.formatUtils.formatTimestamp(document.updatedAt),
-      })),
+      records: result.records
+        ? result.records.map((document) => ({
+            ...document,
+            createdAt: this.formatUtils.formatTimestamp(document.createdAt),
+            updatedAt: this.formatUtils.formatTimestamp(document.updatedAt),
+          }))
+        : [],
     };
   }
 
@@ -58,12 +62,13 @@ export class DocumentController {
   })
   @UseGuards(TokenGuard)
   @Get('/:id')
-  async getOne(@User() user: AuthUser) {
+  async getOne(@User() user: AuthUser, @Param() params: GetDocumentDto) {
     const result = await firstValueFrom(
       this.documentGrpc.client.getDocument({
-        id: 'id',
+        id: params.id,
       }),
     );
+
     if (result.record.userId !== user.userId) {
       throw new Error('Not allowed');
     }
@@ -74,6 +79,7 @@ export class DocumentController {
     return {
       record: {
         ...documentData,
+        paths: documentData.paths ? Object.values(documentData.paths) : {},
         createdAt: this.formatUtils.formatTimestamp(result.record.createdAt),
         updatedAt: this.formatUtils.formatTimestamp(result.record.updatedAt),
       },
