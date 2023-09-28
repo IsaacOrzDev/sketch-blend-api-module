@@ -160,3 +160,10 @@ export class UpdateDocumentDto {
   })
   data: UpdateDocumentDataDto;
 }
+
+export class DeleteDocumentDto {
+  @ApiProperty({
+    type: String,
+  })
+  id: string;
+}
