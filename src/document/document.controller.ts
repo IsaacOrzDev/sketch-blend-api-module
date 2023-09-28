@@ -26,6 +26,7 @@ import {
 } from './document.dto';
 import { ApiFormattedResponse } from 'src/decorator/api-response';
 import { Response } from 'express';
+import { DocumentService } from './document.service';
 
 @ApiTags('Documents')
 @Controller('/documents')
@@ -33,6 +34,7 @@ export class DocumentController {
   constructor(
     private documentGrpc: DocumentGrpc,
     private formatUtils: FormatUtils,
+    private documentService: DocumentService,
   ) {}
 
   @ApiBearerAuth()
@@ -67,16 +69,10 @@ export class DocumentController {
   @UseGuards(TokenGuard)
   @Get('/:id')
   async getOne(@User() user: AuthUser, @Param() params: GetDocumentDto) {
-    const result = await firstValueFrom(
-      this.documentGrpc.client.getDocument({
-        id: params.id,
-      }),
+    const result = await this.documentService.checkIsUserDocument(
+      user,
+      params.id,
     );
-
-    if (result.record.userId !== user.userId) {
-      throw new Error('Not allowed');
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId, ...documentData } = result.record;
 
@@ -101,7 +97,6 @@ export class DocumentController {
         id: params.id,
       }),
     );
-    // res.headers.set('Content-Type', 'image/png');
     console.log(result.record.image);
     return res
       .set({ 'Content-Type': 'image/png' })
@@ -133,15 +128,7 @@ export class DocumentController {
   @UseGuards(TokenGuard)
   @Patch('/:id')
   async updateDocument(@User() user: AuthUser, @Body() dto: UpdateDocumentDto) {
-    const result = await firstValueFrom(
-      this.documentGrpc.client.getDocument({
-        id: dto.id,
-      }),
-    );
-
-    if (result.record.userId !== user.userId) {
-      throw new Error('Not allowed');
-    }
+    await this.documentService.checkIsUserDocument(user, dto.id);
 
     return firstValueFrom(
       this.documentGrpc.client.updateDocument({
@@ -161,15 +148,7 @@ export class DocumentController {
     @User() user: AuthUser,
     @Param() dto: DeleteDocumentDto,
   ) {
-    const result = await firstValueFrom(
-      this.documentGrpc.client.getDocument({
-        id: dto.id,
-      }),
-    );
-
-    if (result.record.userId !== user.userId) {
-      throw new Error('Not allowed');
-    }
+    await this.documentService.checkIsUserDocument(user, dto.id);
 
     return firstValueFrom(
       this.documentGrpc.client.deleteDocument({

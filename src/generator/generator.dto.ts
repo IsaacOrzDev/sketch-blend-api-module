@@ -16,3 +16,26 @@ export class PredictResponse {
   })
   urls: string[];
 }
+
+export class PredictParam {
+  @ApiProperty({
+    type: String,
+  })
+  @IsNotEmpty()
+  documentId: string;
+}
+
+export class ScribblePredictBody {
+  @ApiProperty({
+    type: String,
+  })
+  @IsNotEmpty()
+  prompt: string;
+}
+
+export class ScribblePredictResponse {
+  @ApiProperty({
+    type: String,
+  })
+  url: string;
+}

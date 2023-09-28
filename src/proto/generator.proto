@@ -5,6 +5,8 @@ package generator;
 service GeneratorService{
   
  rpc Predict(PredictRequest) returns (PredictReply) {}
+ rpc ScribblePredict(ScribblePredictRequest) returns (ScribblePredictReply) {}
+ rpc CaptionPredict(CaptionPredictRequest) returns (CaptionPredictReply) {} 
 
 }
 
@@ -14,4 +16,21 @@ message PredictRequest {
 
 message PredictReply{
   repeated string urls = 1;
+}
+
+message ScribblePredictRequest {
+  string imageUrl = 1;
+  optional string prompt = 2;
+}
+
+message ScribblePredictReply {
+  string url = 1;
+}
+
+message CaptionPredictRequest {
+  string imageUrl = 1;
+}
+
+message CaptionPredictReply {
+  string caption = 1;
 }

@@ -22,7 +22,7 @@
     "prisma:pull": "prisma db pull",
     "prisma:push": "prisma db push --skip-generate",
     "prisma:generate": "prisma generate",
-    "proto:gen": "cp -a ./src/proto/. ./proto/ &&  protoc --ts_proto_opt=nestJs=true --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/grpc ./proto/*.proto"
+    "gen": "cp -a ./src/proto/. ./proto/ &&  protoc --ts_proto_opt=nestJs=true --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/grpc ./proto/*.proto"
   },
   "dependencies": {
     "@apollo/server": "^4.9.3",

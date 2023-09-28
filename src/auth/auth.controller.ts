@@ -4,6 +4,7 @@ import {
   AddOneTimeTokenDto,
   AuthenticateGithubUserDto,
   AuthenticateResponse,
+  GenerateTokenDto,
   SendEmailForPasswordLessDto,
   VerifyTokenDto,
   VerifyTokenResponse,
@@ -87,9 +88,9 @@ export class AuthController {
   }
 
   @Post('/access-token/generate')
-  async generateAccessToken() {
+  async generateAccessToken(@Body() body: GenerateTokenDto) {
     return this.accessTokenService.generateAccessToken({
-      userId: 'userId',
+      userId: `${body.userId}`,
       username: 'username',
     });
   }

@@ -69,3 +69,8 @@ export class AddOneTimeTokenDto {
   @ApiProperty({ type: String })
   email: string;
 }
+
+export class GenerateTokenDto {
+  @ApiProperty({ type: Number })
+  userId: number;
+}
