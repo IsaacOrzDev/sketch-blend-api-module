@@ -22,7 +22,7 @@ async function bootstrap() {
     origin:
       process.env.NODE_ENV === 'development'
         ? 'http://localhost:3000'
-        : [process.env.PORTAL_URL, 'http://localhost:3000'],
+        : process.env.PORTAL_URL,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
   });
