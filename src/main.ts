@@ -20,9 +20,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.enableCors({
     origin:
-      process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3000'
-        : process.env.PORTAL_URL,
+      process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : '*',
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
   });
