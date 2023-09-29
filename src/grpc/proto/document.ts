@@ -31,7 +31,7 @@ export interface GetDocumentRequest {
 }
 
 export interface GetDocumentReply {
-  record: DocumentDetail | undefined;
+  record?: DocumentDetail | undefined;
 }
 
 export interface UpdateDocumentRequest {

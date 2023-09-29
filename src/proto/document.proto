@@ -40,7 +40,7 @@ message GetDocumentRequest {
 }
 
 message GetDocumentReply {
-  DocumentDetail record = 1;
+  optional DocumentDetail record = 1;
 }
 
 message UpdateDocumentRequest {

@@ -18,6 +18,10 @@ export class DocumentService {
       }),
     );
 
+    if (!result.record) {
+      throw new Error('Not allowed');
+    }
+
     const checking = user.userId === result.record.userId;
     if (!checking) {
       throw new Error('Not allowed');
