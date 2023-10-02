@@ -23,6 +23,12 @@ export class SendEmailForPasswordLessDto {
   })
   @IsNotEmpty()
   email: string;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+  })
+  username?: string;
 }
 
 export class AuthenticateResponse {

@@ -57,7 +57,7 @@ export class AuthController {
 
   @Post('/password-less/send-email')
   async sendEmailForPasswordLess(@Body() dto: SendEmailForPasswordLessDto) {
-    return this.authService.sendEmailForPasswordLess(dto.email);
+    return this.authService.sendEmailForPasswordLess(dto);
   }
 
   @ApiFormattedResponse({

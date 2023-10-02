@@ -6,6 +6,7 @@ import * as FormData from 'form-data';
 import AccessTokenService from './access-token.service';
 import { UserGrpc } from 'src/proxy/user.grpc';
 import { firstValueFrom } from 'rxjs';
+import { SendEmailForPasswordLessDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -60,8 +61,8 @@ export class AuthService {
           email: data.email,
           login: {
             method: data.method,
-            data: data.data,
-            imageUrl: data.imageUrl,
+            data: data.data ?? {},
+            imageUrl: data.imageUrl ?? '',
           },
         }),
       );
@@ -148,14 +149,19 @@ export class AuthService {
     });
   }
 
-  public async sendEmailForPasswordLess(email: string) {
+  public async sendEmailForPasswordLess(data: SendEmailForPasswordLessDto) {
+    const result = await this.accessTokenService.addOneTimeAccessToken({
+      email: data.email,
+      username: data.username,
+    });
+
     return this.emailService.sendEmail({
-      to: [email],
+      to: [data.email],
       subject: 'Demo-System: Sign In',
       template: 'testing-template',
       data: {
-        message: 'Sign in',
         subject: 'Demo-System: Sign In',
+        message: `Please login with this link: ${process.env.PORTAL_URL}/api/auth/password-less?token=${result.accessToken}`,
       },
     });
   }

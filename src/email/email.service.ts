@@ -9,8 +9,8 @@ export class EmailService {
     aws.config.update({
       region: 'us-west-1',
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID_FOR_EMAIL,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_FOR_EMAIL,
       },
     });
     this.sns = new aws.SNS();
