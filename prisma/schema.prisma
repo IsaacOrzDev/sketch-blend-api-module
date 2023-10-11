@@ -11,14 +11,14 @@ datasource db {
 }
 
 model Post {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  imageUrl  String
-  prompt    String
-  authorId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  likes     Like[]
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  prompt         String
+  imageUrl       String
+  sourceImageUrl String
+  authorId       Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  likes          Like[]
 }
 
 model Like {
