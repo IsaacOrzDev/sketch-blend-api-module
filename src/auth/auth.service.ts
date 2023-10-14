@@ -157,10 +157,10 @@ export class AuthService {
 
     return this.emailService.sendEmail({
       to: [data.email],
-      subject: 'Demo-System: Sign In',
+      subject: 'SketchBlend: Sign In',
       template: 'testing-template',
       data: {
-        subject: 'Demo-System: Sign In',
+        subject: 'SketchBlend: Sign In',
         message: `Please login with this link: ${process.env.PORTAL_URL}/api/auth/password-less?token=${result.accessToken}`,
       },
     });
