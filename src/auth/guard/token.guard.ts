@@ -11,8 +11,6 @@ export class TokenGuard implements CanActivate {
   constructor(private accessTokenService: AccessTokenService) {}
 
   private extractToken(request: Request & { cookies?: any }) {
-    console.log('request.cookies', request.cookies);
-
     if (request.cookies?.access_token) {
       return request.cookies.access_token;
     }

@@ -8,12 +8,11 @@ export class EmailService {
   constructor() {
     aws.config.update({
       region: 'us-west-1',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID_FOR_EMAIL,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_FOR_EMAIL,
-      },
     });
-    this.sns = new aws.SNS();
+    this.sns = new aws.SNS({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID_FOR_EMAIL,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_FOR_EMAIL,
+    });
   }
 
   public sendEmail(params: {

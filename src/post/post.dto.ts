@@ -1,14 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class GetPostListDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: Number,
-    nullable: true,
   })
   offset?: number;
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: Number,
-    nullable: true,
   })
   limit?: number;
 }
@@ -22,7 +20,7 @@ export class CreatePostDto {
   @ApiProperty({
     type: String,
   })
-  sourceImageUrl: string;
+  documentId: string;
 
   @ApiProperty({
     type: String,
@@ -34,5 +32,12 @@ export class DeletePostDto {
   @ApiProperty({
     type: String,
   })
-  postId: string;
+  id: string;
+}
+
+export class LikePostDto {
+  @ApiProperty({
+    type: String,
+  })
+  id: string;
 }

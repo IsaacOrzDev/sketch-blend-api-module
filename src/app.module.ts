@@ -5,6 +5,8 @@ import { ProxyModule } from './proxy/proxy.module';
 import { AuthModule } from './auth/auth.module';
 import { GeneratorModule } from './generator/generator.module';
 import { DocumentModule } from './document/document.module';
+import { BucketModule } from './bucket/bucket.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { DocumentModule } from './document/document.module';
     AuthModule,
     GeneratorModule,
     DocumentModule,
+    BucketModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [],

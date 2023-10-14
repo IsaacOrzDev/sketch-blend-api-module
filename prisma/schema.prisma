@@ -16,6 +16,7 @@ model Post {
   imageUrl       String
   sourceImageUrl String
   authorId       Int
+  documentId     String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   likes          Like[]
