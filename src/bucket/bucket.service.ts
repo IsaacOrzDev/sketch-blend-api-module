@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as aws from 'aws-sdk';
 import axios from 'axios';
-import * as fs from 'fs';
 import { BucketUploadBase64Dto, BucketUploadDto } from './bucket.dto';
 
 @Injectable()

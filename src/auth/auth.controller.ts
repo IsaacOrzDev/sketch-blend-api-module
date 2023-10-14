@@ -1,10 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
-  AddOneTimeTokenDto,
   AuthenticateGithubUserDto,
   AuthenticateResponse,
-  GenerateTokenDto,
   SendEmailForPasswordLessDto,
   VerifyTokenDto,
   VerifyTokenResponse,
@@ -61,14 +59,6 @@ export class AuthController {
   }
 
   @ApiFormattedResponse({
-    type: {},
-  })
-  @Post('/password-less/generate')
-  async generatePasswordLessToken(@Body() dto: AddOneTimeTokenDto) {
-    return this.accessTokenService.addOneTimeAccessToken(dto);
-  }
-
-  @ApiFormattedResponse({
     type: AuthenticateResponse,
     isCreated: true,
     successDescription: 'Authenticate with Email',
@@ -85,14 +75,6 @@ export class AuthController {
       console.log(err);
       throw new Error('Cannot authenticate with Email');
     }
-  }
-
-  @Post('/access-token/generate')
-  async generateAccessToken(@Body() body: GenerateTokenDto) {
-    return this.accessTokenService.generateAccessToken({
-      userId: `${body.userId}`,
-      username: 'username',
-    });
   }
 
   @ApiFormattedResponse({

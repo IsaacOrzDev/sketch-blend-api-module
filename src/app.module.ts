@@ -7,6 +7,7 @@ import { GeneratorModule } from './generator/generator.module';
 import { DocumentModule } from './document/document.module';
 import { BucketModule } from './bucket/bucket.module';
 import { PostModule } from './post/post.module';
+import { TestingModule } from './testing/testing.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PostModule } from './post/post.module';
     DocumentModule,
     BucketModule,
     PostModule,
+    TestingModule,
   ],
   controllers: [AppController],
   providers: [],
