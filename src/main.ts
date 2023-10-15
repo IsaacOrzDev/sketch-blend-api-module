@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Demo System API')
+    .setTitle('Sketch Blend API')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

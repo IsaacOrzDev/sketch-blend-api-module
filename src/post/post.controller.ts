@@ -31,7 +31,7 @@ export class PostController {
 
   @ApiBearerAuth()
   @UseGuards(TokenGuard)
-  @Post('/')
+  @Post('/create')
   async create(@User() user: AuthUser, @Body() data: CreatePostDto) {
     const result = await this.postService.createPost(data, user.userId);
     return result;
