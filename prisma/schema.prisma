@@ -10,22 +10,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model UserInfo {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    Int      @unique
+  name      String
+  email     String?  @unique
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  posts     Post[]
+  likes     Like[]
+}
+
 model Post {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
   prompt         String
   imageUrl       String
   sourceImageUrl String
   authorId       Int
   documentId     String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
   likes          Like[]
+  userInfo       UserInfo? @relation(fields: [authorId], references: [userId])
 }
 
 model Like {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  postId    String   @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String    @db.ObjectId
   userId    Int
-  createdAt DateTime @default(now())
-  Post      Post     @relation(fields: [postId], references: [id])
+  createdAt DateTime  @default(now())
+  post      Post      @relation(fields: [postId], references: [id])
+  userInfo  UserInfo? @relation(fields: [userId], references: [userId])
 }

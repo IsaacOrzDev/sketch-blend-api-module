@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { UserGrpc } from 'src/proxy/user.grpc';
+import { PrismaService } from 'src/db/prisma.service';
+import { AddUserInfoDto } from './user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private userGrpc: UserGrpc) {}
+  constructor(private prismaService: PrismaService) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async getUsers(params: { ids: number[] }) {
-    return this.userGrpc.client.findUser({
-      email: '',
+  public async addUserInfo(data: AddUserInfoDto) {
+    await this.prismaService.client.userInfo.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        imageUrl: data.imageUrl,
+        userId: data.userId,
+      },
     });
   }
 }

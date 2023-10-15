@@ -7,6 +7,7 @@ import AccessTokenService from './access-token.service';
 import { UserGrpc } from 'src/proxy/user.grpc';
 import { firstValueFrom } from 'rxjs';
 import { SendEmailForPasswordLessDto } from './auth.dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     private emailService: EmailService,
     private accessTokenService: AccessTokenService,
     private userGrpc: UserGrpc,
+    private userService: UserService,
   ) {
     this.googleClient = new GoogleOAuth2Client(
       process.env.GOOGLE_CLIENT_ID,
@@ -67,6 +69,12 @@ export class AuthService {
         }),
       );
       userId = newUserResult.user.id;
+      await this.userService.addUserInfo({
+        userId: newUserResult.user.id,
+        name: data.name,
+        email: data.email,
+        imageUrl: data.imageUrl,
+      });
     } else {
       userId = userResult.user.id;
       await firstValueFrom(

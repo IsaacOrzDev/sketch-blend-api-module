@@ -114,7 +114,7 @@ export class DocumentController {
     isCreated: true,
   })
   @UseGuards(TokenGuard)
-  @Post('/')
+  @Post('/create')
   saveDocument(@User() user: AuthUser, @Body() dto: SaveDocumentDto) {
     return firstValueFrom(
       this.documentGrpc.client.saveDocument({
