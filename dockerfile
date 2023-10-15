@@ -12,14 +12,13 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-COPY . .
-
 FROM base AS builder
 
 WORKDIR /workspace
 COPY --from=deps /workspace/node_modules ./node_modules
 COPY . .
 
+RUN npm run prisma:generate
 RUN npm run build
 
 FROM base as runner
