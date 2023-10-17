@@ -1,12 +1,24 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsNumber, ValidateIf } from 'class-validator';
 
 export class GetPostListDto {
   @ApiPropertyOptional({
     type: Number,
   })
+  @IsNumber()
+  @ValidateIf((object, value) => value !== null && value !== undefined)
+  @Transform(({ value }) => {
+    return Number(value);
+  })
   offset?: number;
   @ApiPropertyOptional({
     type: Number,
+  })
+  @IsNumber()
+  @ValidateIf((object, value) => value !== null && value !== undefined)
+  @Transform(({ value }) => {
+    return Number(value);
   })
   limit?: number;
 }

@@ -32,7 +32,10 @@ export class PostController {
   })
   @Get('/')
   async getList(@Query() dto: GetPostListDto) {
-    return this.postService.getPosts(dto);
+    const records = await this.postService.getPosts(dto);
+    return {
+      records,
+    };
   }
 
   @ApiBearerAuth()
