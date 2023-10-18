@@ -168,10 +168,10 @@ export class AuthService {
     return this.emailService.sendEmail({
       to: [data.email],
       subject: 'SketchBlend: Sign In',
-      template: 'testing-template',
+      template: 'sketch-blend-login-template',
       data: {
         subject: 'SketchBlend: Sign In',
-        message: `Please login with this link: ${process.env.PORTAL_URL}/api/auth/password-less?token=${result.accessToken}`,
+        url: `${process.env.PORTAL_URL}/api/auth/password-less?token=${result.accessToken}`,
       },
     });
   }
@@ -179,8 +179,6 @@ export class AuthService {
   public async authenticatePasswordLessLogin(token: string) {
     const result =
       await this.accessTokenService.verifyOneTimeAccessToken(token);
-
-    console.log('what is result', result);
 
     return this.processAuthentication({
       email: result.email,
