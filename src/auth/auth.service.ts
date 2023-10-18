@@ -56,6 +56,8 @@ export class AuthService {
       }),
     );
 
+    let userReply = null;
+
     if (!userResult.user) {
       const newUserResult = await firstValueFrom(
         this.userGrpc.client.createUser({
@@ -77,7 +79,7 @@ export class AuthService {
       });
     } else {
       userId = userResult.user.id;
-      await firstValueFrom(
+      userReply = await firstValueFrom(
         this.userGrpc.client.loginUser({
           id: userResult.user.id,
           login: {
@@ -91,9 +93,9 @@ export class AuthService {
 
     const token = await this.accessTokenService.generateAccessToken({
       userId,
-      username: data.name,
-      email: data.email,
-      imageUrl: data.imageUrl,
+      username: userReply.user?.name ?? data.name,
+      email: userReply.user?.email ?? data.email,
+      imageUrl: userReply.user?.imageUrl ?? data.imageUrl,
       durationType: '1d',
     });
 
@@ -177,6 +179,8 @@ export class AuthService {
   public async authenticatePasswordLessLogin(token: string) {
     const result =
       await this.accessTokenService.verifyOneTimeAccessToken(token);
+
+    console.log('what is result', result);
 
     return this.processAuthentication({
       email: result.email,
