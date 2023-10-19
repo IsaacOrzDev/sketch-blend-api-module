@@ -27,6 +27,7 @@ import {
 import { ApiFormattedResponse } from 'src/decorator/api-response';
 import { Response } from 'express';
 import { DocumentService } from './document.service';
+import { faker } from '@faker-js/faker';
 
 @ApiTags('Documents')
 @Controller('/documents')
@@ -119,6 +120,27 @@ export class DocumentController {
     return firstValueFrom(
       this.documentGrpc.client.saveDocument({
         data: dto,
+        userId: user.userId,
+      }),
+    );
+  }
+
+  @ApiBearerAuth()
+  @ApiFormattedResponse({
+    type: SaveDocumentResponse,
+    isCreated: true,
+  })
+  @UseGuards(TokenGuard)
+  @Post('/create/empty')
+  saveEmptyDocument(@User() user: AuthUser) {
+    return firstValueFrom(
+      this.documentGrpc.client.saveDocument({
+        data: {
+          paths: [],
+          title: faker.lorem.words(3),
+          svg: '<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="react-sketch-canvas" style="width: 100%; height: 100%;" viewBox="0 0 2560 1117" width="2560" height="1117"><g id="react-sketch-canvas__eraser-stroke-group" display="none"><rect id="react-sketch-canvas__mask-background" x="0" y="0" width="100%" height="100%" fill="white"></rect></g><defs></defs><g id="react-sketch-canvas__canvas-background-group"><rect id="react-sketch-canvas__canvas-background" x="0" y="0" width="100%" height="100%" fill="transparent"></rect></g><g id="react-sketch-canvas__stroke-group-0" mask="url(#react-sketch-canvas__eraser-mask-0)"></g></svg>',
+          image: '',
+        },
         userId: user.userId,
       }),
     );
