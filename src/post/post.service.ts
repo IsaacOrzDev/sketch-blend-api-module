@@ -10,6 +10,7 @@ import { DocumentGrpc } from 'src/proxy/document.grpc';
 import BucketService from 'src/bucket/bucket.service';
 import { firstValueFrom } from 'rxjs';
 import { AuthUser } from 'src/decorator/user';
+import ImageService from 'src/image/image.service';
 
 @Injectable()
 export class PostService {
@@ -17,9 +18,10 @@ export class PostService {
     private prismaService: PrismaService,
     private documentGrpc: DocumentGrpc,
     private bucketService: BucketService,
+    private imageService: ImageService,
   ) {}
 
-  public async getPosts(data: GetPostListDto) {
+  public async getPosts(data: GetPostListDto, userId?: number) {
     return this.prismaService.client.post.findMany({
       take: data.limit,
       skip: data.offset,
@@ -28,6 +30,9 @@ export class PostService {
       },
       include: {
         userInfo: true,
+      },
+      where: {
+        authorId: userId,
       },
     });
   }
@@ -63,6 +68,14 @@ export class PostService {
       fileName: `${post.id}/source.png`,
     });
 
+    const sourceSize = await this.imageService.getImageSize(
+      `${process.env.IMAGES_URL}/${post.id}/source.png`,
+    );
+
+    const imageSize = await this.imageService.getImageSize(
+      `${process.env.IMAGES_URL}/${post.id}/generated.png`,
+    );
+
     const result = await this.prismaService.client.post.update({
       where: {
         id: post.id,
@@ -70,6 +83,16 @@ export class PostService {
       data: {
         sourceImageUrl: `${process.env.IMAGES_URL}/${post.id}/source.png`,
         imageUrl: `${process.env.IMAGES_URL}/${post.id}/generated.png`,
+        sourceImageInfo: {
+          width: sourceSize.width,
+          height: sourceSize.height,
+          type: sourceSize.type,
+        },
+        imageInfo: {
+          width: imageSize.width,
+          height: imageSize.height,
+          type: imageSize.type,
+        },
       },
     });
     return result;

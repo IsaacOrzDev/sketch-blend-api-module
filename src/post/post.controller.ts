@@ -40,6 +40,19 @@ export class PostController {
 
   @ApiBearerAuth()
   @ApiFormattedResponse({
+    type: GetPostListResponse,
+  })
+  @UseGuards(TokenGuard)
+  @Get('/user')
+  async getListByUser(@User() user: AuthUser, @Query() dto: GetPostListDto) {
+    const records = await this.postService.getPosts(dto, user.userId);
+    return {
+      records,
+    };
+  }
+
+  @ApiBearerAuth()
+  @ApiFormattedResponse({
     type: CreatePostResponse,
     isCreated: true,
   })

@@ -33,6 +33,15 @@ model Post {
   updatedAt      DateTime  @updatedAt
   likes          Like[]
   userInfo       UserInfo? @relation(fields: [authorId], references: [userId])
+
+  sourceImageInfo ImageInfo?
+  imageInfo       ImageInfo?
+}
+
+type ImageInfo {
+  height Int?
+  width  Int?
+  type   String
 }
 
 model Like {

@@ -7,6 +7,7 @@ import { BucketModule } from 'src/bucket/bucket.module';
 import { ProxyModule } from 'src/proxy/proxy.module';
 import { DbModule } from 'src/db/db.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { ImageModule } from 'src/image/image.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from 'src/auth/auth.module';
     ProxyModule,
     DbModule,
     AuthModule,
+    ImageModule,
   ],
   providers: [PostService],
   controllers: [PostController],
