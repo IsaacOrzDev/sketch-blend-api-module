@@ -36,6 +36,18 @@ class UserInfo {
   imageUrl?: string;
 }
 
+class ImageInfo {
+  @ApiProperty({
+    type: Number,
+  })
+  width: number;
+
+  @ApiProperty({
+    type: Number,
+  })
+  height: number;
+}
+
 class PostRecord {
   @ApiProperty({
     type: String,
@@ -68,6 +80,16 @@ class PostRecord {
     name: string;
     imageUrl: string;
   };
+
+  @ApiProperty({
+    type: ImageInfo,
+  })
+  imageInfo: ImageInfo;
+
+  @ApiProperty({
+    type: UserInfo,
+  })
+  sourceImageInfo: ImageInfo;
 }
 
 class PostDetailRecord extends PostRecord {}
