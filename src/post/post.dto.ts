@@ -87,7 +87,7 @@ class PostRecord {
   imageInfo: ImageInfo;
 
   @ApiProperty({
-    type: UserInfo,
+    type: ImageInfo,
   })
   sourceImageInfo: ImageInfo;
 }
