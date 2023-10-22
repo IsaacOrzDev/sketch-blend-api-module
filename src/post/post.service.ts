@@ -28,9 +28,9 @@ export class PostService {
       orderBy: {
         createdAt: 'desc',
       },
-      include: {
-        userInfo: true,
-      },
+      // include: {
+      //   userInfo: true,
+      // },
       where: {
         authorId: userId,
       },

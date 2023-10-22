@@ -1,10 +1,32 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber, ValidateIf } from 'class-validator';
 import {
   SaveDocumentData,
   SaveDocumentReply,
   Document,
 } from 'src/grpc/proto/document';
+
+export class GetDocumentListDto {
+  @ApiPropertyOptional({
+    type: Number,
+  })
+  @IsNumber()
+  @ValidateIf((object, value) => value !== null && value !== undefined)
+  @Transform(({ value }) => {
+    return Number(value);
+  })
+  offset?: number;
+  @ApiPropertyOptional({
+    type: Number,
+  })
+  @IsNumber()
+  @ValidateIf((object, value) => value !== null && value !== undefined)
+  @Transform(({ value }) => {
+    return Number(value);
+  })
+  limit?: number;
+}
 
 export class SaveDocumentDto implements SaveDocumentData {
   @ApiProperty({

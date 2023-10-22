@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Response as Res,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +19,7 @@ import { DocumentGrpc } from 'src/proxy/document.grpc';
 import {
   DeleteDocumentDto,
   GetDocumentDto,
+  GetDocumentListDto,
   GetDocumentListResponse,
   GetDocumentResponse,
   SaveDocumentDto,
@@ -44,12 +46,12 @@ export class DocumentController {
   })
   @UseGuards(TokenGuard)
   @Get('/')
-  async getList(@User() user: AuthUser) {
+  async getList(@User() user: AuthUser, @Query() dto: GetDocumentListDto) {
     const result = await firstValueFrom(
       this.documentGrpc.client.getDocumentList({
         userId: user.userId,
-        offset: 0,
-        limit: 10,
+        offset: dto.offset,
+        limit: dto.limit,
       }),
     );
     return {
