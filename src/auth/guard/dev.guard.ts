@@ -14,7 +14,10 @@ export class DevGuard implements CanActivate {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const request = context.switchToHttp().getRequest();
 
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        !request.headers.referer.includes('http://localhost') ||
+        !request.headers.origin.includes('http://localhost')
+      ) {
         throw new UnauthorizedException();
       }
       return true;
