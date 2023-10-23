@@ -50,4 +50,20 @@ export default class BucketService {
       })
       .promise();
   }
+
+  public async deletePostFiles(params: { id: string }) {
+    const data = await this.s3
+      .listObjectsV2({
+        Bucket: process.env.S3_IMAGE_BUCKET_NAME,
+        Prefix: params.id,
+      })
+      .promise();
+    const objectKeys = data.Contents.map((obj) => ({ Key: obj.Key }));
+    await this.s3
+      .deleteObjects({
+        Bucket: process.env.S3_IMAGE_BUCKET_NAME,
+        Delete: { Objects: objectKeys },
+      })
+      .promise();
+  }
 }

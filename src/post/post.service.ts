@@ -125,11 +125,13 @@ export class PostService {
   }
 
   public async deletePost(data: DeletePostDto) {
-    return this.prismaService.client.post.delete({
+    const response = await this.prismaService.client.post.delete({
       where: {
         id: data.id,
       },
     });
+    await this.bucketService.deletePostFiles({ id: data.id });
+    return response;
   }
 
   public async likePost(data: LikePostDto, userId: number) {

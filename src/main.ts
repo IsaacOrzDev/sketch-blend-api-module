@@ -5,9 +5,26 @@ import { ValidationPipe } from '@nestjs/common';
 import { ResponseInterceptor } from './interceptors/response-interceptor';
 import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
+import * as Sentry from '@sentry/node';
+import { ProfilingIntegration } from '@sentry/profiling-node';
+import { SentryFilter } from './sentry-filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  if (!!process.env.SENTRY_DNS) {
+    Sentry.init({
+      dsn: process.env.SENTRY_DNS,
+      integrations: [new ProfilingIntegration()],
+      // Performance Monitoring
+      tracesSampleRate: 1.0,
+      // Set sampling rate for profiling - this is relative to tracesSampleRate
+      profilesSampleRate: 1.0,
+    });
+
+    const httpAdapter = app.getHttpAdapter();
+    app.useGlobalFilters(new SentryFilter(httpAdapter));
+  }
 
   const config = new DocumentBuilder()
     .setTitle('Sketch Blend API')
