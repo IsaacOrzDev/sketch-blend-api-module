@@ -14,8 +14,10 @@ import {
   CreatePostDto,
   CreatePostResponse,
   DeletePostDto,
+  GetPostDto,
   GetPostListDto,
   GetPostListResponse,
+  GetPostResponse,
   LikePostDto,
 } from './post.dto';
 import { TokenGuard } from 'src/auth/guard/token.guard';
@@ -48,6 +50,17 @@ export class PostController {
     const records = await this.postService.getPosts(dto, user.userId);
     return {
       records,
+    };
+  }
+
+  @ApiFormattedResponse({
+    type: GetPostResponse,
+  })
+  @Get('/:id')
+  async getOne(@Param() dto: GetPostDto) {
+    const record = await this.postService.getPostById(dto.id);
+    return {
+      record,
     };
   }
 

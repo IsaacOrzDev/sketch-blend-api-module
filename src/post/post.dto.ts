@@ -23,6 +23,13 @@ export class GetPostListDto {
   limit?: number;
 }
 
+export class GetPostDto {
+  @ApiProperty({
+    type: String,
+  })
+  id: string;
+}
+
 class UserInfo {
   @ApiProperty({
     type: String,
@@ -102,11 +109,11 @@ export class GetPostListResponse {
   records: PostRecord[];
 }
 
-export class GetDocumentDto {
+export class GetPostResponse {
   @ApiProperty({
-    type: String,
+    type: PostDetailRecord,
   })
-  id: string;
+  record: PostDetailRecord;
 }
 
 export class CreatePostDto {

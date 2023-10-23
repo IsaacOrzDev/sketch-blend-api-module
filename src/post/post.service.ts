@@ -37,6 +37,17 @@ export class PostService {
     });
   }
 
+  public async getPostById(id: string) {
+    return this.prismaService.client.post.findUnique({
+      where: {
+        id,
+      },
+      // include: {
+      //   userInfo: true,
+      // },
+    });
+  }
+
   public async createPost(data: CreatePostDto, userId: number) {
     const document = await firstValueFrom(
       this.documentGrpc.client.getDocument({
