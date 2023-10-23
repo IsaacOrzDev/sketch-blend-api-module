@@ -93,9 +93,9 @@ export class AuthService {
 
     const token = await this.accessTokenService.generateAccessToken({
       userId,
-      username: userReply.user?.name ?? data.name,
-      email: userReply.user?.email ?? data.email,
-      imageUrl: userReply.user?.imageUrl ?? data.imageUrl,
+      username: userReply?.user?.name ?? data.name,
+      email: userReply?.user?.email ?? data.email,
+      imageUrl: userReply?.user?.imageUrl ?? data.imageUrl,
       durationType: '1d',
     });
 
@@ -172,6 +172,7 @@ export class AuthService {
       data: {
         subject: 'SketchBlend: Sign In',
         url: `${process.env.PORTAL_URL}/api/auth/password-less?token=${result.accessToken}`,
+        time: Date.now(),
       },
     });
   }
