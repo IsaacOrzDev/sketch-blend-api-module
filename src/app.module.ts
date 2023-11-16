@@ -8,10 +8,19 @@ import { DocumentModule } from './document/document.module';
 import { BucketModule } from './bucket/bucket.module';
 import { PostModule } from './post/post.module';
 import { DevModule } from './dev/dev.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
+
     ProxyModule,
     AuthModule,
     GeneratorModule,
@@ -21,6 +30,11 @@ import { DevModule } from './dev/dev.module';
     DevModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
