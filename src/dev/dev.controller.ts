@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import AccessTokenService from '../auth/access-token.service';
-import { GenerateTokenDto, GetImageSizeDto } from './testing.dto';
+import { GenerateTokenDto, GetImageSizeDto } from './dev.dto';
 import { TokenGuard } from 'src/auth/guard/token.guard';
 import { AddOneTimeTokenDto } from 'src/auth/auth.dto';
 import { DevGuard } from 'src/auth/guard/dev.guard';
@@ -9,9 +9,9 @@ import { BucketUploadDto } from 'src/bucket/bucket.dto';
 import BucketService from 'src/bucket/bucket.service';
 import ImageService from 'src/image/image.service';
 
-@ApiTags('Testing')
-@Controller('/testing')
-export class TestingController {
+@ApiTags('Dev')
+@Controller('/dev')
+export class DevController {
   constructor(
     private accessTokenService: AccessTokenService,
     private bucketService: BucketService,

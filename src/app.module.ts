@@ -7,7 +7,7 @@ import { GeneratorModule } from './generator/generator.module';
 import { DocumentModule } from './document/document.module';
 import { BucketModule } from './bucket/bucket.module';
 import { PostModule } from './post/post.module';
-import { TestingModule } from './testing/testing.module';
+import { DevModule } from './dev/dev.module';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ import { TestingModule } from './testing/testing.module';
     DocumentModule,
     BucketModule,
     PostModule,
-    TestingModule,
+    DevModule,
   ],
   controllers: [AppController],
   providers: [],

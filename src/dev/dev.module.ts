@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ProxyModule } from 'src/proxy/proxy.module';
 import { ConfigModule } from '@nestjs/config';
-import { TestingController } from './testing.controller';
+import { DevController } from './dev.controller';
 import { AuthModule } from '../auth/auth.module';
 import { BucketModule } from 'src/bucket/bucket.module';
 import { ImageModule } from 'src/image/image.module';
@@ -15,7 +15,7 @@ import { ImageModule } from 'src/image/image.module';
     ImageModule,
   ],
   providers: [],
-  controllers: [TestingController],
+  controllers: [DevController],
   exports: [],
 })
-export class TestingModule {}
+export class DevModule {}

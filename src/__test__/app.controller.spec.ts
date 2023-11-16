@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
+import { AppController } from '../app.controller';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -13,9 +13,9 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return testing', () => {
-      expect(appController.getTesting()).toBe('testing');
+  describe('App Controller', () => {
+    it('should return true for health check', () => {
+      expect(appController.healthCheck()).toBe(true);
     });
   });
 });
