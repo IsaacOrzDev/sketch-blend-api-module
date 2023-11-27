@@ -2,10 +2,13 @@ syntax = "proto3";
 
 package generator;
 
+
+
 service GeneratorService{
   
- rpc Predict(PredictRequest) returns (PredictReply) {}
  rpc ScribblePredict(ScribblePredictRequest) returns (ScribblePredictReply) {}
+ rpc ScribblePredictInBackground(ScribblePredictRequest) returns (ScribblePredictInBackgroundReply) {}
+ rpc ScribblePredictStatus(ScribblePredictInBackgroundReply) returns (ScribblePredictStatusReply) {}
  rpc CaptionPredict(CaptionPredictRequest) returns (CaptionPredictReply) {} 
 
 }
@@ -25,6 +28,15 @@ message ScribblePredictRequest {
 
 message ScribblePredictReply {
   string url = 1;
+}
+
+message ScribblePredictInBackgroundReply {
+  string id = 1;
+}
+
+message ScribblePredictStatusReply {
+  string status = 1;
+  optional string url = 2;
 }
 
 message CaptionPredictRequest {

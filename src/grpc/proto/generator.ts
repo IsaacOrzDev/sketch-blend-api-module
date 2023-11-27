@@ -21,6 +21,15 @@ export interface ScribblePredictReply {
   url: string;
 }
 
+export interface ScribblePredictInBackgroundReply {
+  id: string;
+}
+
+export interface ScribblePredictStatusReply {
+  status: string;
+  url?: string | undefined;
+}
+
 export interface CaptionPredictRequest {
   imageUrl: string;
 }
@@ -32,19 +41,30 @@ export interface CaptionPredictReply {
 export const GENERATOR_PACKAGE_NAME = "generator";
 
 export interface GeneratorServiceClient {
-  predict(request: PredictRequest): Observable<PredictReply>;
-
   scribblePredict(request: ScribblePredictRequest): Observable<ScribblePredictReply>;
+
+  scribblePredictInBackground(request: ScribblePredictRequest): Observable<ScribblePredictInBackgroundReply>;
+
+  scribblePredictStatus(request: ScribblePredictInBackgroundReply): Observable<ScribblePredictStatusReply>;
 
   captionPredict(request: CaptionPredictRequest): Observable<CaptionPredictReply>;
 }
 
 export interface GeneratorServiceController {
-  predict(request: PredictRequest): Promise<PredictReply> | Observable<PredictReply> | PredictReply;
-
   scribblePredict(
     request: ScribblePredictRequest,
   ): Promise<ScribblePredictReply> | Observable<ScribblePredictReply> | ScribblePredictReply;
+
+  scribblePredictInBackground(
+    request: ScribblePredictRequest,
+  ):
+    | Promise<ScribblePredictInBackgroundReply>
+    | Observable<ScribblePredictInBackgroundReply>
+    | ScribblePredictInBackgroundReply;
+
+  scribblePredictStatus(
+    request: ScribblePredictInBackgroundReply,
+  ): Promise<ScribblePredictStatusReply> | Observable<ScribblePredictStatusReply> | ScribblePredictStatusReply;
 
   captionPredict(
     request: CaptionPredictRequest,
@@ -53,7 +73,12 @@ export interface GeneratorServiceController {
 
 export function GeneratorServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["predict", "scribblePredict", "captionPredict"];
+    const grpcMethods: string[] = [
+      "scribblePredict",
+      "scribblePredictInBackground",
+      "scribblePredictStatus",
+      "captionPredict",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("GeneratorService", method)(constructor.prototype[method], method, descriptor);

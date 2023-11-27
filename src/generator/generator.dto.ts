@@ -7,6 +7,11 @@ export class PredictDto {
   })
   @IsNotEmpty()
   prompt: string;
+
+  @ApiProperty({
+    type: String,
+  })
+  imageUrl: string;
 }
 
 export class PredictResponse {
@@ -36,6 +41,34 @@ export class ScribblePredictBody {
 export class ScribblePredictResponse {
   @ApiProperty({
     type: String,
+  })
+  url: string;
+}
+
+export class ScribblePredictInBackgroundResponse {
+  @ApiProperty({
+    type: String,
+  })
+  id: string;
+}
+
+export class ScribblePredictStatusParam {
+  @ApiProperty({
+    type: String,
+  })
+  @IsNotEmpty()
+  taskId: string;
+}
+
+export class ScribblePredictStatusResponse {
+  @ApiProperty({
+    type: String,
+  })
+  status: string;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
   })
   url: string;
 }
