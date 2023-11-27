@@ -84,7 +84,7 @@ export class PostController {
   @Delete('/:id')
   async delete(@User() user: AuthUser, @Param() data: DeletePostDto) {
     await this.postService.checkIsUserPost(user, data.id);
-    await this.postService.deletePost(data);
+    await this.postService.deletePost(data, user.userId);
     return { success: true };
   }
 

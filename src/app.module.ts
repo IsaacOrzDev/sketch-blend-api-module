@@ -10,6 +10,7 @@ import { PostModule } from './post/post.module';
 import { DevModule } from './dev/dev.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -20,7 +21,12 @@ import { APP_GUARD } from '@nestjs/core';
         limit: 10,
       },
     ]),
-
+    RedisModule.forRoot({
+      config: {
+        url: process.env.REDIS_URL,
+        tls: {},
+      },
+    }),
     ProxyModule,
     AuthModule,
     GeneratorModule,

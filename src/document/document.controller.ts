@@ -30,6 +30,8 @@ import { ApiFormattedResponse } from 'src/decorator/api-response';
 import { Response } from 'express';
 import { DocumentService } from './document.service';
 import { faker } from '@faker-js/faker';
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
+import { Redis } from 'ioredis';
 
 @ApiTags('Documents')
 @Controller('/documents')
@@ -38,6 +40,7 @@ export class DocumentController {
     private documentGrpc: DocumentGrpc,
     private formatUtils: FormatUtils,
     private documentService: DocumentService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   @ApiBearerAuth()
@@ -47,6 +50,12 @@ export class DocumentController {
   @UseGuards(TokenGuard)
   @Get('/')
   async getList(@User() user: AuthUser, @Query() dto: GetDocumentListDto) {
+    const cached = await this.redis.get(
+      `documents:userId:${user.userId}:offset:${dto.offset}:limit:${dto.limit}`,
+    );
+    if (cached) {
+      return JSON.parse(cached);
+    }
     const result = await firstValueFrom(
       this.documentGrpc.client.getDocumentList({
         userId: user.userId,
@@ -54,7 +63,7 @@ export class DocumentController {
         limit: dto.limit,
       }),
     );
-    return {
+    const output = {
       records: result.records
         ? result.records.map((document) => ({
             ...document,
@@ -63,6 +72,13 @@ export class DocumentController {
           }))
         : [],
     };
+    await this.redis.set(
+      `documents:userId:${user.userId}:offset:${dto.offset}:limit:${dto.limit}`,
+      JSON.stringify(output),
+      'EX',
+      60 * 5,
+    );
+    return output;
   }
 
   @ApiBearerAuth()
@@ -118,13 +134,18 @@ export class DocumentController {
   })
   @UseGuards(TokenGuard)
   @Post('/create')
-  saveDocument(@User() user: AuthUser, @Body() dto: SaveDocumentDto) {
-    return firstValueFrom(
+  async saveDocument(@User() user: AuthUser, @Body() dto: SaveDocumentDto) {
+    const result = await firstValueFrom(
       this.documentGrpc.client.saveDocument({
         data: dto,
         userId: user.userId,
       }),
     );
+    const keys = await this.redis.keys(`documents:userId:${user.userId}:*`);
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
+    return result;
   }
 
   @ApiBearerAuth()
@@ -134,7 +155,11 @@ export class DocumentController {
   })
   @UseGuards(TokenGuard)
   @Post('/create/empty')
-  saveEmptyDocument(@User() user: AuthUser) {
+  async saveEmptyDocument(@User() user: AuthUser) {
+    const keys = await this.redis.keys(`documents:userId:${user.userId}:*`);
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
     return firstValueFrom(
       this.documentGrpc.client.saveDocument({
         data: {
@@ -153,7 +178,10 @@ export class DocumentController {
   @Patch('/:id')
   async updateDocument(@User() user: AuthUser, @Body() dto: UpdateDocumentDto) {
     await this.documentService.checkIsUserDocument(user, dto.id);
-
+    const keys = await this.redis.keys(`documents:userId:${user.userId}:*`);
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
     return firstValueFrom(
       this.documentGrpc.client.updateDocument({
         data: {
@@ -173,7 +201,10 @@ export class DocumentController {
     @Param() dto: DeleteDocumentDto,
   ) {
     await this.documentService.checkIsUserDocument(user, dto.id);
-
+    const keys = await this.redis.keys(`documents:userId:${user.userId}:*`);
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
     return firstValueFrom(
       this.documentGrpc.client.deleteDocument({
         id: dto.id,

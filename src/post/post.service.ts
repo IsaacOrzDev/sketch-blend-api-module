@@ -11,6 +11,8 @@ import BucketService from 'src/bucket/bucket.service';
 import { firstValueFrom } from 'rxjs';
 import { AuthUser } from 'src/decorator/user';
 import ImageService from 'src/image/image.service';
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class PostService {
@@ -19,22 +21,38 @@ export class PostService {
     private documentGrpc: DocumentGrpc,
     private bucketService: BucketService,
     private imageService: ImageService,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  public async getPosts(data: GetPostListDto, userId?: number) {
+  public async getPostsFromDb(data: GetPostListDto, userId?: number) {
     return this.prismaService.client.post.findMany({
       take: data.limit,
       skip: data.offset,
       orderBy: {
         createdAt: 'desc',
       },
-      // include: {
-      //   userInfo: true,
-      // },
       where: {
         authorId: userId,
       },
     });
+  }
+
+  public async getPosts(data: GetPostListDto, userId?: number) {
+    const cached = await this.redis.get(
+      `posts:userId:${userId}:offset:${data.offset}:limit:${data.limit}`,
+    );
+    if (cached) {
+      return JSON.parse(cached);
+    } else {
+      const records = await this.getPostsFromDb(data, userId);
+      await this.redis.set(
+        `posts:userId:${userId}:offset:${data.offset}:limit:${data.limit}`,
+        JSON.stringify(records),
+        'EX',
+        60 * 10,
+      );
+      return records;
+    }
   }
 
   public async getPostById(id: string) {
@@ -42,9 +60,6 @@ export class PostService {
       where: {
         id,
       },
-      // include: {
-      //   userInfo: true,
-      // },
     });
   }
 
@@ -106,6 +121,12 @@ export class PostService {
         },
       },
     });
+    const keys = (await this.redis.keys(`posts:userId:undefined:*`)).concat(
+      await this.redis.keys(`posts:userId:${userId}:*`),
+    );
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
     return result;
   }
 
@@ -135,13 +156,19 @@ export class PostService {
     return true;
   }
 
-  public async deletePost(data: DeletePostDto) {
+  public async deletePost(data: DeletePostDto, userId: number) {
     const response = await this.prismaService.client.post.delete({
       where: {
         id: data.id,
       },
     });
     await this.bucketService.deletePostFiles({ id: data.id });
+    const keys = (await this.redis.keys(`posts:userId:undefined:*`)).concat(
+      await this.redis.keys(`posts:userId:${userId}:*`),
+    );
+    for (const key of keys) {
+      await this.redis.del(key);
+    }
     return response;
   }
 
