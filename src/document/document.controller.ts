@@ -50,11 +50,14 @@ export class DocumentController {
   @UseGuards(TokenGuard)
   @Get('/')
   async getList(@User() user: AuthUser, @Query() dto: GetDocumentListDto) {
-    const cached = await this.redis.get(
-      `documents:userId:${user.userId}:offset:${dto.offset}:limit:${dto.limit}`,
-    );
+    const cached = await this.documentService.getCachedList({
+      userId: user.userId,
+      offset: dto.offset,
+      limit: dto.limit,
+    });
+
     if (cached) {
-      return JSON.parse(cached);
+      return cached;
     }
     const result = await firstValueFrom(
       this.documentGrpc.client.getDocumentList({
@@ -72,12 +75,12 @@ export class DocumentController {
           }))
         : [],
     };
-    await this.redis.set(
-      `documents:userId:${user.userId}:offset:${dto.offset}:limit:${dto.limit}`,
-      JSON.stringify(output),
-      'EX',
-      60 * 5,
-    );
+    await this.documentService.setCachedList({
+      userId: user.userId,
+      offset: dto.offset,
+      limit: dto.limit,
+      data: output,
+    });
     return output;
   }
 
@@ -141,10 +144,9 @@ export class DocumentController {
         userId: user.userId,
       }),
     );
-    const keys = await this.redis.keys(`documents:userId:${user.userId}:*`);
-    for (const key of keys) {
-      await this.redis.del(key);
-    }
+    await this.documentService.deleteCachedList({
+      userId: user.userId,
+    });
     return result;
   }
 
@@ -156,10 +158,9 @@ export class DocumentController {
   @UseGuards(TokenGuard)
   @Post('/create/empty')
   async saveEmptyDocument(@User() user: AuthUser) {
-    const keys = await this.redis.keys(`documents:userId:${user.userId}:*`);
-    for (const key of keys) {
-      await this.redis.del(key);
-    }
+    await this.documentService.deleteCachedList({
+      userId: user.userId,
+    });
     return firstValueFrom(
       this.documentGrpc.client.saveDocument({
         data: {
@@ -178,10 +179,9 @@ export class DocumentController {
   @Patch('/:id')
   async updateDocument(@User() user: AuthUser, @Body() dto: UpdateDocumentDto) {
     await this.documentService.checkIsUserDocument(user, dto.id);
-    const keys = await this.redis.keys(`documents:userId:${user.userId}:*`);
-    for (const key of keys) {
-      await this.redis.del(key);
-    }
+    await this.documentService.deleteCachedList({
+      userId: user.userId,
+    });
     return firstValueFrom(
       this.documentGrpc.client.updateDocument({
         data: {
